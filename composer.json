@@ -1,0 +1,36 @@
+{
+    "name": "vipps/module-checkout",
+    "type": "magento2-module",
+    "description": "Vipps Checkout",
+    "license": "proprietary",
+    "version": "1.0.0",
+    "require": {
+        "magento/framework": "103.0.*",
+        "magento/module-sales": "103.0.*",
+        "magento/module-payment": "100.4.*",
+        "magento/module-checkout": "100.4.*",
+        "psr/log": "~1.0"
+    },
+    "require-dev": {
+        "phpmd/phpmd": "@stable",
+        "phpunit/phpunit": "^9.0",
+        "squizlabs/php_codesniffer": "@stable"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Vipps\\Checkout\\": ""
+        }
+    },
+    "extra": {
+        "vaimo-module-category": "Integration"
+    },
+    "repositories": {
+        "magento": {
+            "type": "composer",
+            "url": "https://repo.magento.com/"
+        }
+    }
+}

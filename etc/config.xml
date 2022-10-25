@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<!--
+  ~ Copyright 2022 Vipps
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+  ~ documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+  ~ the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+  ~ and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+  ~ TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL
+  ~ THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+  ~ CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+  ~ IN THE SOFTWARE.
+  -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <csp>
+            <mode>
+                <storefront>
+                    <report_uri>https://checkout.vipps.no/</report_uri>
+                </storefront>
+            </mode>
+        </csp>
+        <payment>
+            <vipps_v2>
+                <model>Vipps\Checkout\Model\Method\Vipps</model>
+                <title>Vipps Payment</title>
+                <active>1</active>
+                <order_status>pending</order_status>
+                <is_gateway>1</is_gateway>
+                <can_use_checkout>1</can_use_checkout>
+                <can_initialize>0</can_initialize>
+                <can_authorize>0</can_authorize>
+                <can_capture>1</can_capture>
+                <can_refund>1</can_refund>
+                <can_capture_partial>1</can_capture_partial>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_fetch_transaction_information>1</can_fetch_transaction_information>
+                <can_void>1</can_void>
+                <can_cancel>1</can_cancel>
+                <can_use_internal>1</can_use_internal>
+                <environment>develop</environment>
+                <client_secret backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
+                <subscription_key1 backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
+                <client_id backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
+                <merchant_serial_number backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
+                <cancellation_cart_persistence>1</cancellation_cart_persistence>
+                <cancellation_type>auto</cancellation_type>
+                <cancellation_attempts_count>3</cancellation_attempts_count>
+                <cancellation_customer_inactivity_time>10</cancellation_customer_inactivity_time>
+                <cancellation_quote_storage_period>60</cancellation_quote_storage_period>
+                <partial_void_sender_email>sales</partial_void_sender_email>
+                <partial_void_email_template>payment_vipps_partial_void_email_template</partial_void_email_template>
+                <partial_void_mail_message><![CDATA[Just want to inform you that some items from your order was canceled. Unfortunately Vipps don't support partial void yet, but no worries, all your money will get back after authorization will be canceled by your bank automatically.]]></partial_void_mail_message>
+            </vipps_v2>
+        </payment>
+    </default>
+</config>
