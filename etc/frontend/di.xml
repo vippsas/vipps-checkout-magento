@@ -35,4 +35,18 @@
             <argument name="config" xsi:type="object">Vipps\Checkout\Gateway\Config\Config</argument>
         </arguments>
     </type>
+
+    <type name="Magento\Checkout\Model\CompositeConfigProvider">
+        <arguments>
+            <argument name="configProviders" xsi:type="array">
+                <item name="vipps_checkout_config" xsi:type="object">Vipps\Checkout\Model\CheckoutConfigProvider</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Vipps\Checkout\Model\CheckoutConfigProvider">
+        <arguments>
+            <argument name="config" xsi:type="object">Vipps\Checkout\Gateway\Config\Config</argument>
+            <argument name="checkoutSession" xsi:type="object">Magento\Checkout\Model\Session\Proxy</argument>
+        </arguments>
+    </type>
 </config>

@@ -66,7 +66,7 @@ define([
 
         loadFrame: function () {
             window.vippsCheckout = VippsCheckout({
-                checkoutFrontendUrl: "https://checkout-mt.vipps.no",
+                checkoutFrontendUrl: window.checkoutConfig.vippsCheckout.checkoutFrontendUrl,
                 iFrameContainerId: "vipps-checkout-frame-container",
                 language: "no",
                 on: {

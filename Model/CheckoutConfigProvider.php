@@ -13,57 +13,52 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
+declare(strict_types=1);
+
 namespace Vipps\Checkout\Model;
 
+use Magento\Checkout\Model\ConfigProviderInterface;
+use Magento\Framework\Session\SessionManagerInterface;
 use Magento\Payment\Gateway\ConfigInterface;
 use Vipps\Checkout\Api\EnvironmentInterface;
+use Magento\Checkout\Model\Session;
 
-/**
- * Class UrlResolver
- * @package Vipps\Checkout\Model
- */
-class UrlResolver
+class CheckoutConfigProvider implements ConfigProviderInterface
 {
-    /**
-     * @var string
-     */
-    private static $productionBaseUrl = 'https://api.vipps.no';
-
-    /**
-     * @var string
-     */
-    private static $developBaseUrl = 'https://apitest.vipps.no';
-
     /**
      * @var ConfigInterface
      */
     private $config;
+    /**
+     * @var SessionManagerInterface|Session
+     */
+    private $checkoutSession;
 
     /**
-     * VippsUrlProvider constructor.
+     * CheckoutConfigProvider constructor.
      *
      * @param ConfigInterface $config
+     * @param SessionManagerInterface $checkoutSession
      */
     public function __construct(
-        ConfigInterface $config
+        ConfigInterface $config,
+        SessionManagerInterface $checkoutSession
     ) {
         $this->config = $config;
+        $this->checkoutSession = $checkoutSession;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return string
-     */
-    public function getBaseUrl()
+    public function getConfig()
     {
-        $env = $this->config->getValue('environment');
+        $checkoutFrontendUrl = $this->config->getValue('environment') === EnvironmentInterface::ENVIRONMENT_PRODUCTION
+            ? EnvironmentInterface::CHECKOUT_FRONTEND_URL_PRODUCTION
+            : EnvironmentInterface::CHECKOUT_FRONTEND_URL_DEVELOP;
 
-        return $env === EnvironmentInterface::ENVIRONMENT_DEVELOP ? self::$developBaseUrl : self::$productionBaseUrl;
-    }
-
-    public function getUrl($url)
-    {
-        return $this->getBaseUrl() . '/' . ltrim($url, '/');
+        return [
+            'vippsCheckout' => [
+                'checkoutFrontendUrl' => $checkoutFrontendUrl,
+                'language' => 'no'
+            ]
+        ];
     }
 }

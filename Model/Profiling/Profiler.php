@@ -151,7 +151,9 @@ class Profiler implements ProfilerInterface
      */
     private function depersonalizedResponse($response)
     {
-        unset($response['url']);
+        if (isset($response['url'])) {
+            unset($response['url']);
+        }
 
         return $this->gdprCompliance->process($response);
     }
@@ -175,7 +177,7 @@ class Profiler implements ProfilerInterface
     {
         $recursive = function ($data, $indent = '') use (&$recursive) {
             $output = '{' . PHP_EOL;
-            foreach ($data as $key => $value) {
+            foreach ((array)$data as $key => $value) {
                 if (is_array($value)) {
                     $output .= $indent . '    ' . $key . ': ' . $recursive($value, $indent . '    ') . PHP_EOL;
                 } elseif (!is_object($value)) {

@@ -17,6 +17,8 @@ namespace Vipps\Checkout\Controller\Vipps;
 
 use Magento\Framework\App\ActionInterface;
 use Magento\Framework\Controller\ResultFactory;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Message\ManagerInterface;
 use Magento\Framework\Session\SessionManagerInterface as CheckoutSession;
 use Vipps\Checkout\Model\SessionManager;
 
@@ -34,6 +36,10 @@ class Session implements ActionInterface
      * @var ResultFactory
      */
     private $resultFactory;
+    /**
+     * @var ManagerInterface
+     */
+    private $messageManager;
 
     /**
      * Session constructor.
@@ -41,24 +47,32 @@ class Session implements ActionInterface
      * @param CheckoutSession $checkoutSession
      * @param SessionManager $sessionManager
      * @param ResultFactory $resultFactory
+     * @param ManagerInterface $messageManager
      */
     public function __construct(
         CheckoutSession $checkoutSession,
         SessionManager $sessionManager,
-        ResultFactory $resultFactory
+        ResultFactory $resultFactory,
+        ManagerInterface $messageManager
     ) {
         $this->checkoutSession = $checkoutSession;
         $this->sessionManager = $sessionManager;
         $this->resultFactory = $resultFactory;
+        $this->messageManager = $messageManager;
     }
 
     public function execute()
     {
-        $token = false;
+        // this value should be exactly a string
+        $token = '';
 
-        $quote = $this->checkoutSession->getQuote();
-        if ($quote) {
-            $token = $this->sessionManager->getSessionToken($quote);
+        try {
+            $quote = $this->checkoutSession->getQuote();
+            if ($quote) {
+                $token = $this->sessionManager->getSessionToken($quote);
+            }
+        } catch (\Exception $e) {
+            $this->messageManager->addErrorMessage($e->getMessage());
         }
 
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);

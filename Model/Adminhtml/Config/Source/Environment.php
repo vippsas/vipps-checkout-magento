@@ -16,22 +16,13 @@
 namespace Vipps\Checkout\Model\Adminhtml\Config\Source;
 
 use Magento\Framework\Option\ArrayInterface;
+use Vipps\Checkout\Api\EnvironmentInterface;
 
 /**
  * Class Environment
  */
 class Environment implements ArrayInterface
 {
-    /**
-     * @var string
-     */
-    const ENVIRONMENT_PRODUCTION = 'production';
-
-    /**
-     * @var string
-     */
-    const ENVIRONMENT_DEVELOP = 'develop';
-
     /**
      * Possible environment types
      *
@@ -41,11 +32,11 @@ class Environment implements ArrayInterface
     {
         return [
             [
-                'value' => self::ENVIRONMENT_DEVELOP,
+                'value' => EnvironmentInterface::ENVIRONMENT_DEVELOP,
                 'label' => 'Develop',
             ],
             [
-                'value' => self::ENVIRONMENT_PRODUCTION,
+                'value' => EnvironmentInterface::ENVIRONMENT_PRODUCTION,
                 'label' => 'Production'
             ]
         ];

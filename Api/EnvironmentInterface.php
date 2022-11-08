@@ -13,30 +13,24 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Checkout\Controller\Vipps;
+namespace Vipps\Checkout\Api;
 
-use Magento\Framework\Controller\Result\Redirect;
-use Magento\Framework\Controller\ResultFactory;
-
-class Index extends \Magento\Checkout\Controller\Index\Index
+interface EnvironmentInterface
 {
-    public function execute()
-    {
-        $resultPage = parent::execute();
-        if ($resultPage instanceof Redirect) {
-            return $resultPage;
-        }
-
-        $request = $this->getRequest();
-        if ($request->getParam('token') === null) {
-            $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-            $resultRedirect->setPath('checkout/vipps/session');
-
-            return $resultRedirect;
-        }
-
-        $resultPage->getConfig()->getTitle()->set(__('Checkout'));
-
-        return $resultPage;
-    }
+    /**
+     * @var string
+     */
+    const ENVIRONMENT_PRODUCTION = 'production';
+    /**
+     * @var string
+     */
+    const ENVIRONMENT_DEVELOP = 'develop';
+    /**
+     * @var string
+     */
+    const CHECKOUT_FRONTEND_URL_PRODUCTION = 'https://checkout.vipps.no';
+    /**
+     * @var string
+     */
+    const CHECKOUT_FRONTEND_URL_DEVELOP = 'https://checkout-mt.vipps.no';
 }
