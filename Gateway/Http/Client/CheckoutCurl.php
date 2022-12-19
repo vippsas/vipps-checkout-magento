@@ -131,7 +131,9 @@ class CheckoutCurl implements ClientInterface
                 $this->jsonEncoder->encode($transfer->getBody())
             );
 
-            return Response::fromString($adapter->read());
+            $response = $adapter->read();
+
+            return Response::fromString($response);
         } finally {
             $adapter ? $adapter->close() : null;
         }

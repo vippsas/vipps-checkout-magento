@@ -50,7 +50,7 @@ class BillingDetails extends DataObject
     /**
      * @var string
      */
-    const REGION = 'region';
+    const CITY = 'city';
     /**
      * @var string
      */
@@ -107,9 +107,9 @@ class BillingDetails extends DataObject
     /**
      * @return string
      */
-    public function getRegion()
+    public function getCity()
     {
-        return $this->getData(self::REGION);
+        return $this->getData(self::CITY);
     }
 
     /**

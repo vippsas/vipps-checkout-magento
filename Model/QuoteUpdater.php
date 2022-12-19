@@ -103,7 +103,7 @@ class QuoteUpdater
 
         $shippingAddress->setStreetFull($shippingDetails->getStreetAddress());
         $shippingAddress->setPostcode($shippingDetails->getPostalCode());
-        $shippingAddress->setCity($shippingDetails->getRegion());
+        $shippingAddress->setCity($shippingDetails->getCity());
         $shippingAddress->setCountryId($this->countryCodeLocator->getCountryCode($shippingDetails->getCountry()));
 
         $shippingAddress->setShippingMethod($shippingDetails->getShippingMethodId());
@@ -130,7 +130,7 @@ class QuoteUpdater
 
         $billingAddress->setStreetFull($billingDetails->getStreetAddress());
         $billingAddress->setPostcode($billingDetails->getPostalCode());
-        $billingAddress->setCity($billingDetails->getRegion());
+        $billingAddress->setCity($billingDetails->getCity());
 
         $billingAddress->setCountryId($this->countryCodeLocator->getCountryCode($billingDetails->getCountry()));
 

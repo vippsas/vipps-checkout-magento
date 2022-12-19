@@ -20,13 +20,14 @@ namespace Vipps\Checkout\Controller\Vipps;
 use Laminas\Http\Response;
 use Magento\Framework\App\ActionInterface;
 use Magento\Framework\App\CsrfAwareActionInterface;
-use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Framework\View\Result\Layout;
 use Psr\Log\LoggerInterface;
 use Vipps\Checkout\Api\Data\QuoteInterface;
@@ -65,6 +66,14 @@ class Callback implements ActionInterface, CsrfAwareActionInterface
      * @var SessionProcessor
      */
     private SessionProcessor $sessionProcessor;
+    /**
+     * @var Json
+     */
+    private Json $serializer;
+    /**
+     * @var array
+     */
+    private $requestData;
 
     /**
      * Callback constructor.
@@ -74,6 +83,7 @@ class Callback implements ActionInterface, CsrfAwareActionInterface
      * @param QuoteRepositoryInterface $quoteRepository
      * @param SessionProcessor $sessionProcessor
      * @param LoggerInterface $logger
+     * @param Json $serializer
      *
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
@@ -82,13 +92,15 @@ class Callback implements ActionInterface, CsrfAwareActionInterface
         RequestInterface $request,
         QuoteRepositoryInterface $quoteRepository,
         SessionProcessor $sessionProcessor,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        Json $serializer
     ) {
         $this->resultFactory = $resultFactory;
         $this->request = $request;
         $this->quoteRepository = $quoteRepository;
         $this->logger = $logger;
         $this->sessionProcessor = $sessionProcessor;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -98,6 +110,7 @@ class Callback implements ActionInterface, CsrfAwareActionInterface
     {
         $result = $this->resultFactory->create(ResultFactory::TYPE_JSON);
         try {
+            $this->requestData = $this->serializer->unserialize($this->request->getContent());
             $this->authorize();
 
             $vippsQuote = $this->getVippsQuote();
@@ -128,7 +141,8 @@ class Callback implements ActionInterface, CsrfAwareActionInterface
 
     private function authorize()
     {
-        if (!$this->request->getParam('order')) {
+
+        if (isset($this->requestData['reference'])) {
             throw new LocalizedException(__('Invalid request parameters'));
         }
     }
@@ -143,7 +157,7 @@ class Callback implements ActionInterface, CsrfAwareActionInterface
     {
         if (null === $this->vippsQuote || $forceReload) {
             $this->vippsQuote = $this->quoteRepository
-                ->loadByOrderId($this->request->getParam('order'));
+                ->loadByOrderId($this->requestData['reference']);
         }
 
         return $this->vippsQuote;

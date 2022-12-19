@@ -42,7 +42,7 @@ class PaymentDetails extends DataObject
     /**
      * @var string
      */
-    const STATE_AUTHORISED = 'authorised';
+    const STATE_AUTHORIZED = 'authorized';
     /**
      * @var string
      */
@@ -79,7 +79,7 @@ class PaymentDetails extends DataObject
 
     public function isAuthorised()
     {
-        return $this->getState() === self::STATE_AUTHORISED;
+        return $this->getState() === self::STATE_AUTHORIZED;
     }
 
     public function isTerminated()

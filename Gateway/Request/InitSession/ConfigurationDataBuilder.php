@@ -15,28 +15,14 @@
  */
 namespace Vipps\Checkout\Gateway\Request\InitSession;
 
-use Magento\Customer\Model\Customer;
-use Magento\Framework\Session\SessionManagerInterface;
 use Magento\Payment\Gateway\Request\BuilderInterface;
-use Magento\Customer\Model\Session;
 
 /**
- * Class CustomerDataBuilder
+ * Class ConfigurationDataBuilder
  * @package Vipps\Checkout\Gateway\Request\InitSession
  */
-class CustomerDataBuilder implements BuilderInterface
+class ConfigurationDataBuilder implements BuilderInterface
 {
-    /**
-     * @var SessionManagerInterface|Session
-     */
-    private SessionManagerInterface $customerSession;
-
-    public function __construct(
-        SessionManagerInterface $customerSession
-    ) {
-        $this->customerSession = $customerSession;
-    }
-
     /**
      * Get related data for transaction section.
      *
@@ -49,20 +35,11 @@ class CustomerDataBuilder implements BuilderInterface
     {
         $data = [];
 
-        /** @var Customer $customer */
-        $customer = $this->customerSession->getCustomer();
-        if ($customer && $customer->getDefaultBillingAddress()) {
-            $data['prefillCustomer'] = [
-                'firstName' => $customer->getFirstname(),
-                'lastName' => $customer->getLastname(),
-                'email' => $customer->getEmail(),
-                'phoneNumber' => $customer->getDefaultBillingAddress()->getTelephone(),
-                'streetAddress' => $customer->getDefaultBillingAddress()->getStreetFull(),
-                'city' => $customer->getDefaultBillingAddress()->getCity(),
-                'postalCode' => $customer->getDefaultBillingAddress()->getPostcode(),
-                'country' => $customer->getDefaultBillingAddress()->getCountry()
-            ];
-        }
+
+        $data['customerInteraction'] = 'CUSTOMER_NOT_PRESENT';
+        $data['elements'] = 'Full';
+        //$data['userFlow'] = 'WEB_REDIRECT'; //WEB_REDIRECT|NATIVE_REDIRECT
+        $data['countries']['supported'] = ['NO', 'SE', 'DK'];
 
         return $data;
     }

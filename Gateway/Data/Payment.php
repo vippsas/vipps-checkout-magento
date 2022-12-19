@@ -72,7 +72,7 @@ class Payment extends DataObject
      *
      * @var string
      */
-    const STATE_AUTHORISED = 'authorised';
+    const STATE_AUTHORIZED = 'authorized';
 
     /**
      * Merchant has terminated the payment via the cancelPayment endpoint
@@ -210,7 +210,7 @@ class Payment extends DataObject
 
     public function isAuthorised()
     {
-        return $this->getState() === self::STATE_AUTHORISED;
+        return $this->getState() === self::STATE_AUTHORIZED;
     }
 
     public function isTerminated()

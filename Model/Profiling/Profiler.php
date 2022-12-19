@@ -121,7 +121,11 @@ class Profiler implements ProfilerInterface
      */
     private function parseOrderId(Response $response)
     {
-        $content = $this->jsonDecoder->decode($response->getContent());
+        try {
+            $content = $this->jsonDecoder->decode($response->getContent());
+        } catch (\Throwable $t) {
+            $content = [];
+        }
         return $content['orderId'] ?? ($content['reference'] ?? null);
     }
 

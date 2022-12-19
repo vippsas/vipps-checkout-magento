@@ -2,10 +2,8 @@
 
 namespace Vipps\Checkout\Model;
 
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Vipps\Checkout\Api\CheckoutCommandManagerInterface;
-use Vipps\Checkout\Api\Data\QuoteStatusInterface;
 use Vipps\Checkout\Api\QuoteRepositoryInterface;
 use Vipps\Checkout\Gateway\Data\InitSession;
 use Vipps\Checkout\Gateway\Data\InitSessionBuilder;
@@ -79,25 +77,8 @@ class SessionManager
 
     public function getSessionToken(Quote $quote): ?string
     {
-        $token = false;
+        $initSession = $this->initSession($quote);
 
-        try {
-            $vippsQuote = $this->vippsQuoteRepository->get($quote->getId());
-            if ($vippsQuote->getCheckoutSessionId()) {
-                $session = $this->getSession($vippsQuote->getCheckoutSessionId());
-                if (!$session->isSessionTerminated()) {
-                    $token = $vippsQuote->getCheckoutToken();
-                }
-            }
-        } catch (NoSuchEntityException $e) {
-            //;
-        }
-
-        if (!$token) {
-            $initSession = $this->initSession($quote);
-            $token = $initSession->getToken();
-        }
-
-        return $token;
+        return $initSession->getToken();
     }
 }
