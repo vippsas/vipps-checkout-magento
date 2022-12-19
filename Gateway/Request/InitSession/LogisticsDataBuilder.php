@@ -81,20 +81,7 @@ class LogisticsDataBuilder implements BuilderInterface
         $result = [
             'logistics' => [
                 'dynamicOptionsCallback' => $this->urlBuilder->getUrl('checkout/vipps/logistics', ['reference' => $reference]),
-                'fixedOptions' => [
-                    [
-                        'brand' => 'OTHER',
-                        'amount' => [
-                            'currency' => 'NOK',
-                            'value' => 0
-                        ],
-                        'id' => 'freeshipping_freeshipping',
-                        'priority' => 0,
-                        'isDefault' => true,
-                        'title' => 'Free Shipping',
-                        'description' => 'Free Shipping'
-                    ]
-                ]
+                'fixedOptions' => []
             ]
         ];
 
