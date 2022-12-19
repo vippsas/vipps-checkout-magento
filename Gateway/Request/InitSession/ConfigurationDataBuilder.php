@@ -16,6 +16,7 @@
 namespace Vipps\Checkout\Gateway\Request\InitSession;
 
 use Magento\Payment\Gateway\Request\BuilderInterface;
+use Magento\Directory\Model\AllowedCountries;
 
 /**
  * Class ConfigurationDataBuilder
@@ -23,6 +24,22 @@ use Magento\Payment\Gateway\Request\BuilderInterface;
  */
 class ConfigurationDataBuilder implements BuilderInterface
 {
+    /**
+     * @var AllowedCountries
+     */
+    private $allowedCountries;
+
+    /**
+     * ConfigurationDataBuilder constructor.
+     *
+     * @param AllowedCountries $allowedCountries
+     */
+    public function __construct(
+        AllowedCountries $allowedCountries
+    ) {
+        $this->allowedCountries = $allowedCountries;
+    }
+
     /**
      * Get related data for transaction section.
      *
@@ -39,7 +56,7 @@ class ConfigurationDataBuilder implements BuilderInterface
         $data['customerInteraction'] = 'CUSTOMER_NOT_PRESENT';
         $data['elements'] = 'Full';
         //$data['userFlow'] = 'WEB_REDIRECT'; //WEB_REDIRECT|NATIVE_REDIRECT
-        $data['countries']['supported'] = ['NO', 'SE', 'DK'];
+        $data['countries']['supported'] = $this->allowedCountries->getAllowedCountries();
 
         return $data;
     }
