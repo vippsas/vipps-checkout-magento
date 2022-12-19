@@ -245,8 +245,7 @@ class Logistics implements ActionInterface, CsrfAwareActionInterface
                 'brand' => 'OTHER',
                 'isDefault' => false,
                 'title' => $shippingMethod->getCarrierTitle(),
-                'description' => $shippingMethod->getCarrierTitle() . ' ' . $shippingMethod->getMethodTitle(),
-                'isPickupPoint' => false
+                'description' => $shippingMethod->getCarrierTitle() . ' ' . $shippingMethod->getMethodTitle()
             ];
         }
 
