@@ -236,13 +236,13 @@ class Logistics implements ActionInterface, CsrfAwareActionInterface
         foreach ($shippingMethods as $key => $shippingMethod) {
             $methodFullCode = $shippingMethod->getCarrierCode() . '_' . $shippingMethod->getMethodCode();
             $responseData[] = [
+                'brand' => 'OTHER',
                 'amount' => [
                     'currency' => $quote->getStoreCurrencyCode(),
                     'value' => $shippingMethod->getAmount() * 100
                 ],
                 'id' => $methodFullCode,
                 'priority' => $key,
-                'brand' => 'OTHER',
                 'isDefault' => false,
                 'title' => $shippingMethod->getCarrierTitle(),
                 'description' => $shippingMethod->getCarrierTitle() . ' ' . $shippingMethod->getMethodTitle()
