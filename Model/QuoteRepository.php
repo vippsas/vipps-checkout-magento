@@ -167,6 +167,12 @@ class QuoteRepository implements QuoteRepositoryInterface
         return $vippsQuote;
     }
 
+    /**
+     * @param $quoteId
+     *
+     * @return QuoteInterface
+     * @throws NoSuchEntityException
+     */
     public function get($quoteId): QuoteInterface
     {
         if (!isset($this->quotesCache[$quoteId])) {

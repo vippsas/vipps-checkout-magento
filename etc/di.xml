@@ -41,6 +41,22 @@
     <preference for="Vipps\Checkout\Model\Profiling\ProfilerInterface"
                 type="Vipps\Checkout\Model\Profiling\Profiler" />
 
+    <preference for="Vipps\Checkout\Api\Logistics\IntegrationsProviderInterface"
+                type="Vipps\Checkout\Model\Logistics\IntegrationsProvider" />
+
+    <type name="Vipps\Checkout\Model\Logistics\IntegrationsProvider">
+        <arguments>
+            <argument name="providers" xsi:type="array">
+                <item name="porterbuddy" xsi:type="string">Vipps\Checkout\Model\Logistics\IntegrationProvider\Porterbuddy</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Vipps\Checkout\Model\Logistics\IntegrationProvider\Porterbuddy">
+        <arguments>
+            <argument name="config" xsi:type="object">Vipps\Checkout\Gateway\Config\Config</argument>
+        </arguments>
+    </type>
+
     <type name="Vipps\Checkout\Gateway\Command\CheckoutCommandManager">
         <arguments>
             <argument name="commandManager" xsi:type="object">VippsCheckoutCommandManager</argument>
@@ -143,8 +159,7 @@
                 <item name="transaction" xsi:type="string">Vipps\Checkout\Gateway\Request\InitSession\TransactionDataBuilder</item>
                 <item name="logistics" xsi:type="string">Vipps\Checkout\Gateway\Request\InitSession\LogisticsDataBuilder</item>
                 <item name="customer" xsi:type="string">Vipps\Checkout\Gateway\Request\InitSession\CustomerDataBuilder</item>
-                <item name="contactFields" xsi:type="string">Vipps\Checkout\Gateway\Request\InitSession\ContactFieldsDataBuilder</item>
-                <item name="addressFields" xsi:type="string">Vipps\Checkout\Gateway\Request\InitSession\AddressFieldsDataBuilder</item>
+                <item name="configuration" xsi:type="string">Vipps\Checkout\Gateway\Request\InitSession\ConfigurationDataBuilder</item>
             </argument>
         </arguments>
     </virtualType>
@@ -172,7 +187,7 @@
     <virtualType name="VippsCheckoutInitSessionTransferFty" type="Vipps\Checkout\Gateway\Http\TransferFactory">
         <arguments>
             <argument name="method" xsi:type="string">POST</argument>
-            <argument name="endpointUrl" xsi:type="string">/checkout/v2/session</argument>
+            <argument name="endpointUrl" xsi:type="string">/checkout/v3/session</argument>
             <argument name="allowedBodyKeys" xsi:type="array">
                 <item name="merchantInfo" xsi:type="string">merchantInfo</item>
                 <item name="transaction" xsi:type="string">transaction</item>
@@ -187,7 +202,7 @@
     <virtualType name="VippsCheckoutGetSessionTransferFty" type="Vipps\Checkout\Gateway\Http\TransferFactory">
         <arguments>
             <argument name="method" xsi:type="string">GET</argument>
-            <argument name="endpointUrl" xsi:type="string">/checkout/v2/session/:session_id</argument>
+            <argument name="endpointUrl" xsi:type="string">/checkout/v3/session/:session_id</argument>
             <argument name="urlParams" xsi:type="array">
                 <item name="session_id" xsi:type="string">session_id</item>
             </argument>
@@ -417,10 +432,6 @@
             <argument name="config" xsi:type="object">Vipps\Checkout\Gateway\Config\Config</argument>
             <argument name="logger" xsi:type="object">Vipps\Checkout\Model\Logger</argument>
         </arguments>
-    </type>
-
-    <type name="Magento\Quote\Api\CartRepositoryInterface">
-        <plugin name="Vipps\Checkout\Plugin\Quote\Model\CartRepositoryPlugin" type="Vipps\Checkout\Plugin\Quote\Model\CartRepositoryPlugin" />
     </type>
 
     <type name="Vipps\Checkout\Cron\FetchOrderFromVipps">

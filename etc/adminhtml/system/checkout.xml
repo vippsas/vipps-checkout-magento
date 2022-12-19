@@ -24,5 +24,74 @@
                 <group id="vipps_required"/>
             </requires>
         </field>
+        <group id="logistics_integrations" translate="label" showInDefault="1" showInWebsite="1" showInStore="1" sortOrder="10">
+            <label>Logistics Integrations</label>
+            <group id="logistics_integrations_porterbuddy" translate="label" showInDefault="1" showInWebsite="1" showInStore="1" sortOrder="10">
+                <label>Porterbuddy</label>
+                <field id="checkout_porterbuddy_active" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="1" sortOrder="10">
+                    <label>Enable Porterbuddy</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>payment/vipps_v2/checkout_porterbuddy_active</config_path>
+                </field>
+                <field id="checkout_porterbuddy_public_token" translate="label" type="obscure" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Public Token</label>
+                    <comment>
+                        <![CDATA[Public Token]]>
+                    </comment>
+                    <tooltip>Porterbuddy api key</tooltip>
+                    <config_path>payment/vipps_v2/checkout_porterbuddy_public_token</config_path>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    <depends>
+                        <field id="checkout_porterbuddy_active">1</field>
+                    </depends>
+                </field>
+                <field id="checkout_porterbuddy_api_key" translate="label" type="obscure" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Api Key</label>
+                    <comment>
+                        <![CDATA[Api Key]]>
+                    </comment>
+                    <tooltip>Porterbuddy api key</tooltip>
+                    <config_path>payment/vipps_v2/checkout_porterbuddy_api_key</config_path>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    <depends>
+                        <field id="checkout_porterbuddy_active">1</field>
+                    </depends>
+                </field>
+                <group id="origin" translate="label" showInDefault="1" showInWebsite="1" showInStore="1" sortOrder="40">
+                    <depends>
+                        <field id="checkout_porterbuddy_active">1</field>
+                    </depends>
+                    <label>Origin</label>
+                    <field id="origin_name" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="10">
+                        <label>Name</label>
+                        <config_path>payment/vipps_v2/checkout_porterbuddy_origin_name</config_path>
+                    </field>
+                    <field id="origin_email" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="20">
+                        <label>Email</label>
+                        <config_path>payment/vipps_v2/checkout_porterbuddy_origin_email</config_path>
+                    </field>
+                    <field id="origin_phone" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="30">
+                        <label>Phone Number</label>
+                        <config_path>payment/vipps_v2/checkout_porterbuddy_origin_phone</config_path>
+                    </field>
+                    <field id="origin_address_street" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="40">
+                        <label>Street Address</label>
+                        <config_path>payment/vipps_v2/checkout_porterbuddy_origin_address_street</config_path>
+                    </field>
+                    <field id="origin_address_zip" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="40">
+                        <label>Postal Code</label>
+                        <config_path>payment/vipps_v2/checkout_porterbuddy_origin_address_zip</config_path>
+                    </field>
+                    <field id="origin_address_city" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="40">
+                        <label>City</label>
+                        <config_path>payment/vipps_v2/checkout_porterbuddy_origin_address_city</config_path>
+                    </field>
+                    <field id="origin_address_country" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="40">
+                        <label>Country</label>
+                        <config_path>payment/vipps_v2/checkout_porterbuddy_origin_address_country</config_path>
+                    </field>
+                </group>
+            </group>
+        </group>
     </group>
 </include>

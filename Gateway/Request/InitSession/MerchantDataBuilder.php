@@ -66,7 +66,7 @@ class MerchantDataBuilder implements BuilderInterface
 
         return [
             'merchantInfo' => [
-                'callbackPrefix' => rtrim($this->urlBuilder->getUrl('checkout/vipps/callback'), '/'),
+                'callbackUrl' => rtrim($this->urlBuilder->getUrl('checkout/vipps/callback'), '/'),
                 'returnUrl' => $this->urlBuilder->getUrl('checkout/vipps/fallback', ['reference' => $reference]),
                 'callbackAuthorizationToken' => $callbackAuthorizationToken,
                 'termsAndConditionsUrl' => $this->urlBuilder->getUrl(),

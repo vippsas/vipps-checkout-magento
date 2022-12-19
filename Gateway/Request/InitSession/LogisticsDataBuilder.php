@@ -18,6 +18,7 @@ namespace Vipps\Checkout\Gateway\Request\InitSession;
 use Magento\Payment\Gateway\Request\BuilderInterface;
 use Magento\Framework\UrlInterface;
 use Vipps\Checkout\Gateway\Request\SubjectReader;
+use Vipps\Checkout\Api\Logistics\IntegrationsProviderInterface;
 
 /**
  * Class LogisticsDataBuilder
@@ -33,23 +34,39 @@ class LogisticsDataBuilder implements BuilderInterface
      * @var SubjectReader
      */
     private $subjectReader;
+    /**
+     * @var IntegrationsProviderInterface
+     */
+    private $integrationsProvider;
 
     /**
      * LogisticsDataBuilder constructor.
      *
      * @param UrlInterface $urlBuilder
      * @param SubjectReader $subjectReader
+     * @param IntegrationsProviderInterface $integrationsProvider
      */
     public function __construct(
         UrlInterface $urlBuilder,
-        SubjectReader $subjectReader
+        SubjectReader $subjectReader,
+        IntegrationsProviderInterface $integrationsProvider
     ) {
         $this->urlBuilder = $urlBuilder;
         $this->subjectReader = $subjectReader;
+        $this->integrationsProvider = $integrationsProvider;
     }
 
     /**
      * Get merchant related data for session request.
+     *
+     * Possible values for fixed options brand field:
+     *
+     * POSTEN
+     * POSTNORD
+     * PORTERBUDDY
+     * INSTABOX
+     * HELTHJEM
+     * OTHER
      *
      * @param array $buildSubject
      *
@@ -61,38 +78,31 @@ class LogisticsDataBuilder implements BuilderInterface
         $paymentDO = $this->subjectReader->readPayment($buildSubject);
         $reference = $paymentDO->getOrder()->getOrderIncrementId();
 
-        return [
+        $result = [
             'logistics' => [
                 'dynamicOptionsCallback' => $this->urlBuilder->getUrl('checkout/vipps/logistics', ['reference' => $reference]),
                 'fixedOptions' => [
                     [
+                        'brand' => 'OTHER',
                         'amount' => [
                             'currency' => 'NOK',
                             'value' => 0
                         ],
                         'id' => 'freeshipping_freeshipping',
                         'priority' => 0,
-                        'brand' => 'Free Shipping',
-                        'product' => 'Free Shipping',
                         'isDefault' => true,
-                        'description' => 'Free Shipping',
-                        'isPickupPoint' => false
-                    ],
-                    [
-                        'amount' => [
-                            'currency' => 'NOK',
-                            'value' => 500
-                        ],
-                        'id' => 'flatrate_flatrate',
-                        'priority' => 0,
-                        'brand' => 'Flat Rate',
-                        'product' => 'Fixed',
-                        'isDefault' => true,
-                        'description' => 'Flat Rate - FixedcouponPost',
-                        'isPickupPoint' => false
+                        'title' => 'Free Shipping',
+                        'description' => 'Free Shipping'
                     ]
                 ]
             ]
         ];
+
+        $integrations = $this->integrationsProvider->get();
+        if ($integrations) {
+            $result['logistics']['integrations'] = $integrations;
+        }
+
+        return $result;
     }
 }
