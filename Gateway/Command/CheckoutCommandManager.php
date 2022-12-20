@@ -42,9 +42,9 @@ class CheckoutCommandManager extends CommandManager implements CheckoutCommandMa
         return $this->executeByCode('init-session', $payment, $arguments);
     }
 
-    public function getSession($sessionId, $arguments = [])
+    public function getSession($reference, $arguments = [])
     {
-        $arguments['session_id'] = $sessionId;
+        $arguments['reference'] = $reference;
 
         return $this->executeByCode('get-session', null, $arguments);
     }

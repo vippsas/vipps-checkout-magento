@@ -25,8 +25,8 @@ use Psr\Log\LoggerInterface;
 use Vipps\Checkout\Api\Data\QuoteStatusInterface;
 use Vipps\Checkout\Model\Order\Cancellation\Config;
 use Vipps\Checkout\Model\Quote as VippsQuote;
-use Vipps\Checkout\Model\Quote\AttemptManagement;
 use Vipps\Checkout\Model\QuoteRepository as VippsQuoteRepository;
+use Vipps\Checkout\Model\Quote\AttemptManagement;
 use Vipps\Checkout\Model\ResourceModel\Quote\Collection as VippsQuoteCollection;
 use Vipps\Checkout\Model\ResourceModel\Quote\CollectionFactory as VippsQuoteCollectionFactory;
 use Vipps\Checkout\Model\SessionProcessor;
@@ -151,12 +151,12 @@ class FetchOrderFromVipps
         try {
             $this->prepareEnv($vippsQuote);
 
-            $vippsQuote->incrementAttempt();
-            $this->vippsQuoteRepository->save($vippsQuote);
-
             $this->sessionProcessor->process($vippsQuote);
         } catch (\Throwable $t) {
             $this->logger->critical($t->getMessage(), ['vipps_quote_id' => $vippsQuote->getId()]);
+
+            $vippsQuote->incrementAttempt();
+            $this->vippsQuoteRepository->save($vippsQuote);
 
             $attempt = $this->attemptManagement->createAttempt($vippsQuote);
             $attempt->setMessage($t->getMessage());
@@ -200,10 +200,6 @@ class FetchOrderFromVipps
             ->addFieldToFilter(
                 QuoteStatusInterface::FIELD_STATUS,
                 ['in' => [QuoteStatusInterface::STATUS_NEW, QuoteStatusInterface::STATUS_PENDING]]
-            )
-            ->addFieldToFilter(
-                QuoteStatusInterface::FIELD_CHECKOUT_TOKEN,
-                ['notnull' => true]
             );
 
         return $collection;

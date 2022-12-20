@@ -68,9 +68,9 @@ class SessionManager
         return $this->initSessionBuilder->setData($response)->build();
     }
 
-    public function getSession($sessionId): Session
+    public function getSession($reference): Session
     {
-        $response = $this->checkoutCommandManager->getSession($sessionId);
+        $response = $this->checkoutCommandManager->getSession($reference);
 
         return $this->sessionBuilder->setData($response)->build();
     }

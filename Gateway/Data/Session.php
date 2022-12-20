@@ -109,8 +109,28 @@ class Session extends DataObject
         return $this->getData(self::BILLING_DETAILS);
     }
 
-    public function isSessionTerminated(): bool
+    public function isSessionExpired(): bool
     {
-        return $this->getSessionState() === 'SessionTerminated';
+        return $this->getSessionState() === 'SessionExpired';
+    }
+
+    public function isSessionCreated(): bool
+    {
+        return $this->getSessionState() === 'SessionCreated';
+    }
+
+    public function isPaymentInitiated(): bool
+    {
+        return $this->getSessionState() === 'PaymentInitiated';
+    }
+
+    public function isPaymentSuccessful(): bool
+    {
+        return $this->getSessionState() === 'PaymentSuccessful';
+    }
+
+    public function isPaymentTerminated(): bool
+    {
+        return $this->getSessionState() === 'PaymentTerminated';
     }
 }

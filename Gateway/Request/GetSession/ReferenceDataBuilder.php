@@ -13,31 +13,28 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
+namespace Vipps\Checkout\Gateway\Request\GetSession;
 
-namespace Vipps\Checkout\Model\ResourceModel\Quote;
-
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+use Magento\Payment\Gateway\Request\BuilderInterface;
 
 /**
- * Class Attempt
+ * Class ReferenceDataBuilder
+ * @package Vipps\Checkout\Gateway\Request\GetSession
  */
-class Attempt extends AbstractDb
+class ReferenceDataBuilder implements BuilderInterface
 {
     /**
-     * Main table name
+     * Get related data for transaction section.
+     *
+     * @param array $buildSubject
+     *
+     * @return array
+     * @throws \Exception
      */
-    const TABLE_NAME = 'vipps_checkout_quote_attempt';
-
-    /**
-     * Index field name
-     */
-    const INDEX_FIELD = 'entity_id';
-
-    /**
-     * Initialize resource model
-     */
-    protected function _construct() //@codingStandardsIgnoreLine
+    public function build(array $buildSubject)
     {
-        $this->_init(self::TABLE_NAME, self::INDEX_FIELD);
+        return [
+            'reference' => $buildSubject['reference']
+        ];
     }
 }

@@ -36,12 +36,12 @@ interface CheckoutCommandManagerInterface
     public function initSession(InfoInterface $payment, $arguments = []);
 
     /**
-     * @param $sessionId
+     * @param $reference
      * @param array $arguments
      *
      * @return mixed
      */
-    public function getSession($sessionId, $arguments = []);
+    public function getSession($reference, $arguments = []);
 
     /**
      * @param InfoInterface $payment

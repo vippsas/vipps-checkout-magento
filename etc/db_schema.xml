@@ -29,7 +29,7 @@
             <column name="token_id"/>
         </constraint>
     </table>
-    <table name="vipps_quote" resource="default" engine="innodb" comment="vipps_quote">
+    <table name="vipps_checkout_quote" resource="default" engine="innodb" comment="vipps_checkout_quote">
         <column xsi:type="int" name="entity_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Entity Id"/>
         <column xsi:type="int" name="quote_id" padding="10" unsigned="true" nullable="true" identity="false" comment="Quote Id"/>
         <column xsi:type="varchar" name="reserved_order_id" nullable="false" length="32" default="" comment="Order Increment Id"/>
@@ -45,18 +45,18 @@
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="entity_id"/>
         </constraint>
-        <constraint xsi:type="foreign" referenceId="VIPPS_QUOTE_QUOTE_ID_QUOTE_ENTITY_ID" table="vipps_quote" column="quote_id" referenceTable="quote" referenceColumn="entity_id" onDelete="CASCADE"/>
-        <constraint xsi:type="unique" referenceId="VIPPS_QUOTE_RESERVED_ORDER_ID">
+        <constraint xsi:type="foreign" referenceId="VIPPS_CHECKUT_QUOTE_QUOTE_ID_QUOTE_ENTITY_ID" table="vipps_checkout_quote" column="quote_id" referenceTable="quote" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <constraint xsi:type="unique" referenceId="VIPPS_CHECKUT_QUOTE_RESERVED_ORDER_ID">
             <column name="reserved_order_id"/>
         </constraint>
-        <constraint xsi:type="unique" referenceId="VIPPS_QUOTE_ORDER_ID">
+        <constraint xsi:type="unique" referenceId="VIPPS_CHECKUT_QUOTE_ORDER_ID">
             <column name="order_id"/>
         </constraint>
-        <index referenceId="VIPPS_QUOTE_QUOTE_ID" indexType="btree">
+        <index referenceId="VIPPS_CHECKUT_QUOTE_QUOTE_ID" indexType="btree">
             <column name="quote_id"/>
         </index>
     </table>
-    <table name="vipps_quote_attempt" resource="default" engine="innodb" comment="vipps_quote_attempt">
+    <table name="vipps_checkout_quote_attempt" resource="default" engine="innodb" comment="vipps_checkout_quote_attempt">
         <column xsi:type="int" name="entity_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Entity Id"/>
         <column xsi:type="int" name="parent_id" padding="10" unsigned="true" nullable="false" identity="false" comment="Vipps Quote Id"/>
         <column xsi:type="text" name="message" nullable="true" comment="Message"/>
@@ -64,7 +64,7 @@
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="entity_id"/>
         </constraint>
-        <constraint xsi:type="foreign" referenceId="VIPPS_QUOTE_ATTEMPTS_PARENT_ID_VIPPS_QUOTE_ENTITY_ID" table="vipps_quote_attempt" column="parent_id" referenceTable="vipps_quote" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="VIPPS_CHECKUT_QUOTE_ATTEMPTS_PARENT_ID_VIPPS_QUOTE_ENTITY_ID" table="vipps_checkout_quote_attempt" column="parent_id" referenceTable="vipps_checkout_quote" referenceColumn="entity_id" onDelete="CASCADE"/>
     </table>
     <table name="vipps_profiling" resource="default" engine="innodb" comment="vipps_profiling">
         <column xsi:type="int" name="entity_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Entity Id"/>

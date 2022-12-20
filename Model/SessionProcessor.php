@@ -201,10 +201,16 @@ class SessionProcessor
                 $vippsQuote->getCheckoutSessionId()
             );
 
-            if ($session->getPaymentDetails()->isTerminated()) {
-                $this->processTerminatedSession($vippsQuote);
-            } elseif ($session->getPaymentDetails()->isAuthorised()) {
+            $diff = (new \DateTime())->diff((new \DateTime($vippsQuote->getCreatedAt())));
+            $daysPassed = $diff->days;
+
+            if ($session->getPaymentDetails()->isAuthorised()) {
                 $this->processAuthorisedSession($vippsQuote, $session);
+            } elseif ($daysPassed > 1
+                || $session->isSessionExpired()
+                || $session->getPaymentDetails()->isTerminated()
+            ) {
+                $this->processTerminatedSession($vippsQuote);
             }
 
             return $session;
@@ -222,7 +228,7 @@ class SessionProcessor
      * @throws \Exception
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    private function processTerminatedSession(QuoteInterface $vippsQuote)
+    public function processTerminatedSession(QuoteInterface $vippsQuote)
     {
         $order = $this->orderLocator->get($vippsQuote->getReservedOrderId());
         if ($order) {
@@ -241,7 +247,7 @@ class SessionProcessor
      * @throws LocalizedException
      * @throws NoSuchEntityException
      */
-    private function processAuthorisedSession(QuoteInterface $vippsQuote, Session $session)
+    public function processAuthorisedSession(QuoteInterface $vippsQuote, Session $session)
     {
         $order = $this->orderLocator->get($vippsQuote->getReservedOrderId());
         if (!$order) {

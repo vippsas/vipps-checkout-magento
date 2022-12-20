@@ -171,7 +171,7 @@
     <virtualType name="VippsCheckoutGetSessionRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
         <arguments>
             <argument name="builders" xsi:type="array">
-                <item name="sessionId" xsi:type="string">Vipps\Checkout\Gateway\Request\GetSession\SessionIdDataBuilder</item>
+                <item name="reference" xsi:type="string">Vipps\Checkout\Gateway\Request\GetSession\ReferenceDataBuilder</item>
             </argument>
         </arguments>
     </virtualType>
@@ -202,18 +202,18 @@
     <virtualType name="VippsCheckoutGetSessionTransferFty" type="Vipps\Checkout\Gateway\Http\TransferFactory">
         <arguments>
             <argument name="method" xsi:type="string">GET</argument>
-            <argument name="endpointUrl" xsi:type="string">/checkout/v3/session/:session_id</argument>
+            <argument name="endpointUrl" xsi:type="string">/checkout/v3/session/:reference</argument>
             <argument name="urlParams" xsi:type="array">
-                <item name="session_id" xsi:type="string">session_id</item>
+                <item name="reference" xsi:type="string">reference</item>
             </argument>
         </arguments>
     </virtualType>
     <virtualType name="VippsCheckoutAdjustAuthorizationTransferFty" type="Vipps\Checkout\Gateway\Http\TransferFactory">
         <arguments>
             <argument name="method" xsi:type="string">PUT</argument>
-            <argument name="endpointUrl" xsi:type="string">/epayment/v1/payments/:order_id/adjustAuthorization</argument>
+            <argument name="endpointUrl" xsi:type="string">/epayment/v1/payments/:reference/adjustAuthorization</argument>
             <argument name="urlParams" xsi:type="array">
-                <item name="session_id" xsi:type="string">order_id</item>
+                <item name="reference" xsi:type="string">reference</item>
             </argument>
             <argument name="allowedBodyKeys" xsi:type="array">
                 <item name="authorisationType" xsi:type="string">authorisationType</item>

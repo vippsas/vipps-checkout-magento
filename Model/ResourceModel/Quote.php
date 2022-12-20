@@ -29,7 +29,7 @@ class Quote extends AbstractDb
     /**
      * Main table name
      */
-    const TABLE_NAME = 'vipps_quote';
+    const TABLE_NAME = 'vipps_checkout_quote';
 
     /**
      * Index field name
