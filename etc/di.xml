@@ -473,9 +473,9 @@
     <virtualType name="VippsCheckoutSendReceiptTransportFty" type="Vipps\Checkout\Gateway\Http\TransferFactory">
         <arguments>
             <argument name="method" xsi:type="string">POST</argument>
-            <argument name="endpointUrl" xsi:type="string">/order-management/v2/ecom/receipts/:orderId</argument>
+            <argument name="endpointUrl" xsi:type="string">/order-management/v2/ecom/receipts/:order_id</argument>
             <argument name="urlParams" xsi:type="array">
-                <item name="orderId" xsi:type="string">orderId</item>
+                <item name="order_id" xsi:type="string">order_id</item>
             </argument>
             <argument name="allowedBodyKeys" xsi:type="array">
                 <item name="orderLines" xsi:type="string">orderLines</item>

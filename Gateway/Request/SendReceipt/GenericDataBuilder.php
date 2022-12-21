@@ -36,7 +36,7 @@ class GenericDataBuilder implements BuilderInterface
         /** @var OrderInterface|Order $order */
         $order = $buildSubject['order'] ?? null;
         if ($order) {
-            return ['orderId' => $order->getIncrementId()];
+            return ['order_id' => $order->getIncrementId()];
         }
 
         return [];

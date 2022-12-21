@@ -92,10 +92,9 @@ class Profiler implements ProfilerInterface
         /** @var ItemInterface $itemDO */
         $itemDO = $this->dataItemFactory->create();
 
-        if ($transfer->getUrlParameters('order_id')) {
-            $orderId = $transfer->getUrlParameters('order_id');
-        } else {
-            $orderId = $this->parseOrderId($response);
+        $orderId = $this->parseOrderIdFromRequest($transfer);
+        if (!$orderId) {
+            $orderId = $this->parseOrderIdFromResponse($response);
         }
 
         $itemDO->setRequestType($this->type);
@@ -112,6 +111,23 @@ class Profiler implements ProfilerInterface
         return $item->getEntityId();
     }
 
+    private function parseOrderIdFromRequest(TransferInterface $transfer)
+    {
+        $orderId = null;
+        foreach (['order_id', 'reference'] as $key) {
+            if ($transfer->getUrlParameters($key)) {
+                $orderId = $transfer->getUrlParameters($key);
+                break;
+            }
+        }
+
+        if (!$orderId) {
+            $orderId = ((array)$transfer->getBody())['transaction']['reference'] ?? null;
+        }
+
+        return $orderId;
+    }
+
     /**
      * Parse order id from response object
      *
@@ -119,7 +135,7 @@ class Profiler implements ProfilerInterface
      *
      * @return string|null
      */
-    private function parseOrderId(Response $response)
+    private function parseOrderIdFromResponse(Response $response)
     {
         try {
             $content = $this->jsonDecoder->decode($response->getContent());

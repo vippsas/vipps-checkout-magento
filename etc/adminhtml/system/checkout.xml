@@ -89,6 +89,7 @@
                     <field id="origin_address_country" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="40">
                         <label>Country</label>
                         <config_path>payment/vipps_v2/checkout_porterbuddy_origin_address_country</config_path>
+                        <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
                     </field>
                 </group>
             </group>
