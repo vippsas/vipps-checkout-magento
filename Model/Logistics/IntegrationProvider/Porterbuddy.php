@@ -51,10 +51,10 @@ class Porterbuddy implements IntegrationProviderInterface
                     'email' => $this->config->getValue('checkout_porterbuddy_origin_email'),
                     'phoneNumber' => $this->config->getValue('checkout_porterbuddy_origin_phone'),
                     'address' => [
-                        'streetAddress' => $this->config->getValue('checkout_porterbuddy_origin_address_street'),
-                        'postalCode' => $this->config->getValue('checkout_porterbuddy_origin_address_zip'),
-                        'city' => $this->config->getValue('checkout_porterbuddy_origin_address_city'),
-                        'country' => $this->config->getValue('checkout_porterbuddy_origin_address_country'),
+                        'StreetAddress' => $this->config->getValue('checkout_porterbuddy_origin_address_street'),
+                        'PostalCode' => $this->config->getValue('checkout_porterbuddy_origin_address_zip'),
+                        'City' => $this->config->getValue('checkout_porterbuddy_origin_address_city'),
+                        'Country' => $this->config->getValue('checkout_porterbuddy_origin_address_country'),
                     ]
                 ]
             ]
