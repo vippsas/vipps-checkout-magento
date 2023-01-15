@@ -17,7 +17,6 @@
 namespace Vipps\Checkout\Model\Logistics\IntegrationProvider;
 
 use Magento\Payment\Gateway\ConfigInterface;
-use Magento\Payment\Gateway\Data\OrderAdapterInterface;
 use Vipps\Checkout\Api\Logistics\IntegrationProviderInterface;
 
 class Porterbuddy implements IntegrationProviderInterface
@@ -37,7 +36,7 @@ class Porterbuddy implements IntegrationProviderInterface
         $this->config = $config;
     }
 
-    public function get(OrderAdapterInterface $order): array
+    public function get(): array
     {
         if (!$this->config->getValue('checkout_porterbuddy_active')) {
             return [];

@@ -18,9 +18,9 @@ namespace Vipps\Checkout\Model\Logistics;
 
 use Magento\Framework\ObjectManager\TMapFactory;
 use Magento\Payment\Gateway\Data\OrderAdapterInterface;
-use Vipps\Checkout\Api\Logistics\IntegrationProviderInterface;
+use Vipps\Checkout\Api\Logistics\FixedOptionProviderInterface;
 
-class IntegrationsProvider
+class FixedOptionsProvider
 {
     /**
      * @var \Magento\Framework\ObjectManager\TMap
@@ -40,7 +40,7 @@ class IntegrationsProvider
         $this->providers = $tmapFactory->create(
             [
                 'array' => $providers,
-                'type' => IntegrationProviderInterface::class
+                'type' => FixedOptionProviderInterface::class
             ]
         );
     }

@@ -14,44 +14,41 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Checkout\Model\Logistics;
+namespace Vipps\Checkout\Model\Logistics\IntegrationProvider;
 
-use Magento\Framework\ObjectManager\TMapFactory;
+use Magento\Payment\Gateway\ConfigInterface;
 use Magento\Payment\Gateway\Data\OrderAdapterInterface;
 use Vipps\Checkout\Api\Logistics\IntegrationProviderInterface;
 
-class IntegrationsProvider
+class Helthjem implements IntegrationProviderInterface
 {
     /**
-     * @var \Magento\Framework\ObjectManager\TMap
+     * @var ConfigInterface
      */
-    private $providers;
+    private $config;
 
     /**
-     * IntegrationsProvider constructor.
+     * Porterbuddy constructor.
      *
-     * @param TMapFactory $tmapFactory
-     * @param array $providers
+     * @param ConfigInterface $config
      */
-    public function __construct(
-        TMapFactory $tmapFactory,
-        array $providers = []
-    ) {
-        $this->providers = $tmapFactory->create(
-            [
-                'array' => $providers,
-                'type' => IntegrationProviderInterface::class
-            ]
-        );
+    public function __construct(ConfigInterface $config)
+    {
+        $this->config = $config;
     }
 
     public function get(OrderAdapterInterface $order): array
     {
-        $result = [];
-        foreach ($this->providers as $provider) {
-            $result[] = $provider->get($order);
+        if (!$this->config->getValue('checkout_helthjem_active')) {
+            return [];
         }
 
-        return array_merge([], ...$result);
+        return [
+            'helthjem' => [
+                'username' => $this->config->getValue('checkout_helthjem_username'),
+                'password' => $this->config->getValue('checkout_helthjem_password'),
+                'shopId' => $this->config->getValue('checkout_helthjem_shop_id'),
+            ]
+        ];
     }
 }

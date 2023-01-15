@@ -57,7 +57,15 @@
                         <field id="checkout_porterbuddy_active">1</field>
                     </depends>
                 </field>
-                <group id="origin" translate="label" showInDefault="1" showInWebsite="1" showInStore="1" sortOrder="40">
+                <field id="method_name" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Method Name</label>
+                    <config_path>payment/vipps_v2/checkout_porterbuddy_method_name</config_path>
+                </field>
+                <field id="title" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Title</label>
+                    <config_path>payment/vipps_v2/checkout_porterbuddy_title</config_path>
+                </field>
+                <group id="origin" translate="label" showInDefault="1" showInWebsite="1" showInStore="1" sortOrder="60">
                     <depends>
                         <field id="checkout_porterbuddy_active">1</field>
                     </depends>
@@ -91,6 +99,120 @@
                         <config_path>payment/vipps_v2/checkout_porterbuddy_origin_address_country</config_path>
                     </field>
                 </group>
+            </group>
+            <group id="logistics_integrations_posten" translate="label" showInDefault="1" showInWebsite="1" showInStore="1" sortOrder="20">
+                <label>Posten</label>
+                <field id="checkout_posten_active" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="1" sortOrder="10">
+                    <label>Enable Posten</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>payment/vipps_v2/checkout_posten_active</config_path>
+                </field>
+                <field id="method_name" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Method Name</label>
+                    <config_path>payment/vipps_v2/checkout_posten_method_name</config_path>
+                </field>
+                <field id="title" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Title</label>
+                    <config_path>payment/vipps_v2/checkout_posten_title</config_path>
+                </field>
+            </group>
+            <group id="logistics_integrations_postnord" translate="label" showInDefault="1" showInWebsite="1" showInStore="1" sortOrder="30">
+                <label>Postnord</label>
+                <field id="checkout_postnord_active" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="1" sortOrder="10">
+                    <label>Enable Postnord</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>payment/vipps_v2/checkout_postnord_active</config_path>
+                </field>
+                <field id="method_name" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Method Name</label>
+                    <config_path>payment/vipps_v2/checkout_postnord_method_name</config_path>
+                </field>
+                <field id="title" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Title</label>
+                    <config_path>payment/vipps_v2/checkout_postnord_title</config_path>
+                </field>
+            </group>
+            <group id="logistics_integrations_instabox" translate="label" showInDefault="1" showInWebsite="1" showInStore="1" sortOrder="40">
+                <label>Instabox</label>
+                <field id="checkout_instabox_active" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="1" sortOrder="10">
+                    <label>Enable Instabox</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>payment/vipps_v2/checkout_instabox_active</config_path>
+                </field>
+                <field id="checkout_instabox_client_id" translate="label" type="obscure" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Client Id</label>
+                    <comment>
+                        <![CDATA[Client Id]]>
+                    </comment>
+                    <tooltip>Instabox Client Id</tooltip>
+                    <config_path>payment/vipps_v2/checkout_instabox_client_id</config_path>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    <depends>
+                        <field id="checkout_instabox_active">1</field>
+                    </depends>
+                </field>
+                <field id="checkout_instabox_client_secret" translate="label" type="obscure" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Client Secret</label>
+                    <comment>
+                        <![CDATA[Client Secret]]>
+                    </comment>
+                    <tooltip>Instabox Client Secret</tooltip>
+                    <config_path>payment/vipps_v2/checkout_instabox_client_secret</config_path>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    <depends>
+                        <field id="checkout_instabox_active">1</field>
+                    </depends>
+                </field>
+                <field id="method_name" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Method Name</label>
+                    <config_path>payment/vipps_v2/checkout_instabox_method_name</config_path>
+                </field>
+                <field id="title" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Title</label>
+                    <config_path>payment/vipps_v2/checkout_instabox_title</config_path>
+                </field>
+            </group>
+            <group id="logistics_integrations_helthjem" translate="label" showInDefault="1" showInWebsite="1" showInStore="1" sortOrder="50">
+                <label>Helthjem</label>
+                <field id="checkout_helthjem_active" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="1" sortOrder="10">
+                    <label>Enable Helthjem</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>payment/vipps_v2/checkout_helthjem_active</config_path>
+                </field>
+                <field id="checkout_helthjem_username" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>User Name</label>
+                    <config_path>payment/vipps_v2/checkout_helthjem_username</config_path>
+                    <depends>
+                        <field id="checkout_helthjem_active">1</field>
+                    </depends>
+                </field>
+                <field id="checkout_helthjem_password" translate="label" type="obscure" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Helthjem Password</label>
+                    <comment>
+                        <![CDATA[Helthjem Password]]>
+                    </comment>
+                    <tooltip>Helthjem Password</tooltip>
+                    <config_path>payment/vipps_v2/checkout_helthjem_password</config_path>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    <depends>
+                        <field id="checkout_helthjem_active">1</field>
+                    </depends>
+                </field>
+                <field id="checkout_helthjem_shop_id" translate="label" sortOrder="35" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Shop Id</label>
+                    <config_path>payment/vipps_v2/checkout_helthjem_shop_id</config_path>
+                    <depends>
+                        <field id="checkout_helthjem_active">1</field>
+                    </depends>
+                </field>
+                <field id="method_name" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Method Name</label>
+                    <config_path>payment/vipps_v2/checkout_helthjem_method_name</config_path>
+                </field>
+                <field id="title" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Title</label>
+                    <config_path>payment/vipps_v2/checkout_helthjem_title</config_path>
+                </field>
             </group>
         </group>
     </group>

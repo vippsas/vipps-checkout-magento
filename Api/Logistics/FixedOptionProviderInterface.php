@@ -14,44 +14,11 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Checkout\Model\Logistics;
+namespace Vipps\Checkout\Api\Logistics;
 
-use Magento\Framework\ObjectManager\TMapFactory;
 use Magento\Payment\Gateway\Data\OrderAdapterInterface;
-use Vipps\Checkout\Api\Logistics\IntegrationProviderInterface;
 
-class IntegrationsProvider
+interface FixedOptionProviderInterface
 {
-    /**
-     * @var \Magento\Framework\ObjectManager\TMap
-     */
-    private $providers;
-
-    /**
-     * IntegrationsProvider constructor.
-     *
-     * @param TMapFactory $tmapFactory
-     * @param array $providers
-     */
-    public function __construct(
-        TMapFactory $tmapFactory,
-        array $providers = []
-    ) {
-        $this->providers = $tmapFactory->create(
-            [
-                'array' => $providers,
-                'type' => IntegrationProviderInterface::class
-            ]
-        );
-    }
-
-    public function get(OrderAdapterInterface $order): array
-    {
-        $result = [];
-        foreach ($this->providers as $provider) {
-            $result[] = $provider->get($order);
-        }
-
-        return array_merge([], ...$result);
-    }
+    public function get(OrderAdapterInterface $order): array;
 }

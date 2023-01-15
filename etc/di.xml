@@ -41,17 +41,62 @@
     <preference for="Vipps\Checkout\Model\Profiling\ProfilerInterface"
                 type="Vipps\Checkout\Model\Profiling\Profiler" />
 
-    <preference for="Vipps\Checkout\Api\Logistics\IntegrationsProviderInterface"
-                type="Vipps\Checkout\Model\Logistics\IntegrationsProvider" />
-
     <type name="Vipps\Checkout\Model\Logistics\IntegrationsProvider">
         <arguments>
             <argument name="providers" xsi:type="array">
                 <item name="porterbuddy" xsi:type="string">Vipps\Checkout\Model\Logistics\IntegrationProvider\Porterbuddy</item>
+                <item name="instabox" xsi:type="string">Vipps\Checkout\Model\Logistics\IntegrationProvider\Instabox</item>
+                <item name="helthjem" xsi:type="string">Vipps\Checkout\Model\Logistics\IntegrationProvider\Helthjem</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Vipps\Checkout\Model\Logistics\FixedOptionsProvider">
+        <arguments>
+            <argument name="providers" xsi:type="array">
+                <item name="posten" xsi:type="string">Vipps\Checkout\Model\Logistics\FixedOptionProvider\Posten</item>
+                <item name="postnord" xsi:type="string">Vipps\Checkout\Model\Logistics\FixedOptionProvider\Postnord</item>
+                <item name="porterbuddy" xsi:type="string">Vipps\Checkout\Model\Logistics\FixedOptionProvider\Porterbuddy</item>
+                <item name="instabox" xsi:type="string">Vipps\Checkout\Model\Logistics\FixedOptionProvider\Instabox</item>
+                <item name="helthjem" xsi:type="string">Vipps\Checkout\Model\Logistics\FixedOptionProvider\Helthjem</item>
             </argument>
         </arguments>
     </type>
     <type name="Vipps\Checkout\Model\Logistics\IntegrationProvider\Porterbuddy">
+        <arguments>
+            <argument name="config" xsi:type="object">Vipps\Checkout\Gateway\Config\Config</argument>
+        </arguments>
+    </type>
+    <type name="Vipps\Checkout\Model\Logistics\FixedOptionProvider\Porterbuddy">
+        <arguments>
+            <argument name="config" xsi:type="object">Vipps\Checkout\Gateway\Config\Config</argument>
+        </arguments>
+    </type>
+    <type name="Vipps\Checkout\Model\Logistics\FixedOptionProvider\Posten">
+        <arguments>
+            <argument name="config" xsi:type="object">Vipps\Checkout\Gateway\Config\Config</argument>
+        </arguments>
+    </type>
+    <type name="Vipps\Checkout\Model\Logistics\FixedOptionProvider\Postnord">
+        <arguments>
+            <argument name="config" xsi:type="object">Vipps\Checkout\Gateway\Config\Config</argument>
+        </arguments>
+    </type>
+    <type name="Vipps\Checkout\Model\Logistics\IntegrationProvider\Instabox">
+        <arguments>
+            <argument name="config" xsi:type="object">Vipps\Checkout\Gateway\Config\Config</argument>
+        </arguments>
+    </type>
+    <type name="Vipps\Checkout\Model\Logistics\FixedOptionProvider\Instabox">
+        <arguments>
+            <argument name="config" xsi:type="object">Vipps\Checkout\Gateway\Config\Config</argument>
+        </arguments>
+    </type>
+    <type name="Vipps\Checkout\Model\Logistics\IntegrationProvider\Helthjem">
+        <arguments>
+            <argument name="config" xsi:type="object">Vipps\Checkout\Gateway\Config\Config</argument>
+        </arguments>
+    </type>
+    <type name="Vipps\Checkout\Model\Logistics\FixedOptionProvider\Helthjem">
         <arguments>
             <argument name="config" xsi:type="object">Vipps\Checkout\Gateway\Config\Config</argument>
         </arguments>

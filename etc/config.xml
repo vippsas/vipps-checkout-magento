@@ -48,6 +48,24 @@
                 <merchant_serial_number backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
                 <checkout_porterbuddy_public_token backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
                 <checkout_porterbuddy_api_key backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
+                <checkout_instabox_client_id backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
+                <checkout_instabox_client_secret backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
+
+                <checkout_posten_method_name>Posten</checkout_posten_method_name>
+                <checkout_posten_title>Norgespakke™ med mulighet for å velge hentested</checkout_posten_title>
+
+                <checkout_porterbuddy_method_name>Porterbuddy</checkout_porterbuddy_method_name>
+                <checkout_porterbuddy_title>Få varen levert på døra</checkout_porterbuddy_title>
+
+                <checkout_postnord_method_name>Postnord</checkout_postnord_method_name>
+                <checkout_postnord_title>MyPack™ med utlevering fra hentested</checkout_postnord_title>
+
+                <checkout_instabox_method_name>Instabox</checkout_instabox_method_name>
+                <checkout_instabox_title>Få varen levert til en Instabox</checkout_instabox_title>
+
+                <checkout_helthjem_method_name>Helthjem</checkout_helthjem_method_name>
+                <checkout_helthjem_title>Levering til hentested</checkout_helthjem_title>
+
                 <cancellation_cart_persistence>1</cancellation_cart_persistence>
                 <cancellation_type>auto</cancellation_type>
                 <cancellation_attempts_count>3</cancellation_attempts_count>

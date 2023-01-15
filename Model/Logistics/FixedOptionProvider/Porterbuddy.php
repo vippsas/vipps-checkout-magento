@@ -14,44 +14,48 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Checkout\Model\Logistics;
+namespace Vipps\Checkout\Model\Logistics\FixedOptionProvider;
 
-use Magento\Framework\ObjectManager\TMapFactory;
+use Magento\Payment\Gateway\ConfigInterface;
 use Magento\Payment\Gateway\Data\OrderAdapterInterface;
-use Vipps\Checkout\Api\Logistics\IntegrationProviderInterface;
+use Vipps\Checkout\Api\Logistics\FixedOptionProviderInterface;
 
-class IntegrationsProvider
+class Porterbuddy implements FixedOptionProviderInterface
 {
     /**
-     * @var \Magento\Framework\ObjectManager\TMap
+     * @var ConfigInterface
      */
-    private $providers;
+    private $config;
 
     /**
-     * IntegrationsProvider constructor.
+     * Porterbuddy constructor.
      *
-     * @param TMapFactory $tmapFactory
-     * @param array $providers
+     * @param ConfigInterface $config
      */
-    public function __construct(
-        TMapFactory $tmapFactory,
-        array $providers = []
-    ) {
-        $this->providers = $tmapFactory->create(
-            [
-                'array' => $providers,
-                'type' => IntegrationProviderInterface::class
-            ]
-        );
+    public function __construct(ConfigInterface $config)
+    {
+        $this->config = $config;
     }
 
     public function get(OrderAdapterInterface $order): array
     {
-        $result = [];
-        foreach ($this->providers as $provider) {
-            $result[] = $provider->get($order);
+        if (!$this->config->getValue('checkout_porterbuddy_active')) {
+            return [];
         }
 
-        return array_merge([], ...$result);
+        return [
+            [
+                'brand' => 'PORTERBUDDY',
+                 'amount' => [
+                    'value' => 0,
+                    'currency' => $order->getCurrencyCode()
+                ],
+                'id' => 'porterbuddy-3',
+                'priority' => 0,
+                'isDefault' => false,
+                'title' => $this->config->getValue('checkout_porterbuddy_method_name'),
+                'description' => $this->config->getValue('checkout_porterbuddy_title')
+            ]
+        ];
     }
 }

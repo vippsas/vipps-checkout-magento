@@ -16,7 +16,9 @@
 
 namespace Vipps\Checkout\Api\Logistics;
 
+use Magento\Payment\Gateway\Data\OrderAdapterInterface;
+
 interface IntegrationProviderInterface
 {
-    public function get(): array;
+    public function get(OrderAdapterInterface $order): array;
 }

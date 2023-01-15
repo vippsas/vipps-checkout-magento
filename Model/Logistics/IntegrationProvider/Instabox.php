@@ -14,44 +14,40 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Checkout\Model\Logistics;
+namespace Vipps\Checkout\Model\Logistics\IntegrationProvider;
 
-use Magento\Framework\ObjectManager\TMapFactory;
+use Magento\Payment\Gateway\ConfigInterface;
 use Magento\Payment\Gateway\Data\OrderAdapterInterface;
 use Vipps\Checkout\Api\Logistics\IntegrationProviderInterface;
 
-class IntegrationsProvider
+class Instabox implements IntegrationProviderInterface
 {
     /**
-     * @var \Magento\Framework\ObjectManager\TMap
+     * @var ConfigInterface
      */
-    private $providers;
+    private $config;
 
     /**
-     * IntegrationsProvider constructor.
+     * Porterbuddy constructor.
      *
-     * @param TMapFactory $tmapFactory
-     * @param array $providers
+     * @param ConfigInterface $config
      */
-    public function __construct(
-        TMapFactory $tmapFactory,
-        array $providers = []
-    ) {
-        $this->providers = $tmapFactory->create(
-            [
-                'array' => $providers,
-                'type' => IntegrationProviderInterface::class
-            ]
-        );
+    public function __construct(ConfigInterface $config)
+    {
+        $this->config = $config;
     }
 
     public function get(OrderAdapterInterface $order): array
     {
-        $result = [];
-        foreach ($this->providers as $provider) {
-            $result[] = $provider->get($order);
+        if (!$this->config->getValue('checkout_instabox_active')) {
+            return [];
         }
 
-        return array_merge([], ...$result);
+        return [
+            'instabox' => [
+                'clientId' => $this->config->getValue('checkout_instabox_client_id'),
+                'clientSecret' => $this->config->getValue('checkout_instabox_client_secret'),
+            ]
+        ];
     }
 }

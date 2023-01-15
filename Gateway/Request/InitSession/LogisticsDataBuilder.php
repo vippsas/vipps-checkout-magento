@@ -18,7 +18,8 @@ namespace Vipps\Checkout\Gateway\Request\InitSession;
 use Magento\Payment\Gateway\Request\BuilderInterface;
 use Magento\Framework\UrlInterface;
 use Vipps\Checkout\Gateway\Request\SubjectReader;
-use Vipps\Checkout\Api\Logistics\IntegrationsProviderInterface;
+use Vipps\Checkout\Model\Logistics\FixedOptionsProvider;
+use Vipps\Checkout\Model\Logistics\IntegrationsProvider;
 
 /**
  * Class LogisticsDataBuilder
@@ -35,25 +36,32 @@ class LogisticsDataBuilder implements BuilderInterface
      */
     private $subjectReader;
     /**
-     * @var IntegrationsProviderInterface
+     * @var IntegrationsProvider
      */
     private $integrationsProvider;
+    /**
+     * @var FixedOptionsProvider
+     */
+    private $fixedOptionsProvider;
 
     /**
      * LogisticsDataBuilder constructor.
      *
      * @param UrlInterface $urlBuilder
      * @param SubjectReader $subjectReader
-     * @param IntegrationsProviderInterface $integrationsProvider
+     * @param IntegrationsProvider $integrationsProvider
+     * @param FixedOptionsProvider $fixedOptionsProvider
      */
     public function __construct(
         UrlInterface $urlBuilder,
         SubjectReader $subjectReader,
-        IntegrationsProviderInterface $integrationsProvider
+        IntegrationsProvider $integrationsProvider,
+        FixedOptionsProvider $fixedOptionsProvider
     ) {
         $this->urlBuilder = $urlBuilder;
         $this->subjectReader = $subjectReader;
         $this->integrationsProvider = $integrationsProvider;
+        $this->fixedOptionsProvider = $fixedOptionsProvider;
     }
 
     /**
@@ -76,29 +84,20 @@ class LogisticsDataBuilder implements BuilderInterface
     public function build(array $buildSubject)
     {
         $paymentDO = $this->subjectReader->readPayment($buildSubject);
+        $order = $paymentDO->getOrder();
         $reference = $paymentDO->getOrder()->getOrderIncrementId();
 
         $result = [
             'logistics' => [
                 'dynamicOptionsCallback' => $this->urlBuilder->getUrl('checkout/vipps/logistics', ['reference' => $reference]),
-                'fixedOptions' => [
-                    [
-                        'brand' => 'OTHER',
-                        'amount' => [
-                            'currency' => 'NOK',
-                            'value' => 0
-                        ],
-                        'id' => 'freeshipping_freeshipping',
-                        'priority' => 0,
-                        'isDefault' => true,
-                        'title' => 'Free Shipping',
-                        'description' => 'Free Shipping'
-                    ]
-                ]
             ]
         ];
 
-        $integrations = $this->integrationsProvider->get();
+        $fixedOptions = $this->fixedOptionsProvider->get($order);
+        if ($fixedOptions) {
+            $result['logistics']['fixedOptions'] = $fixedOptions;
+        }
+        $integrations = $this->integrationsProvider->get($order);
         if ($integrations) {
             $result['logistics']['integrations'] = $integrations;
         }
