@@ -29,6 +29,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Framework\View\Result\Layout;
+use Magento\Payment\Gateway\Data\PaymentDataObjectFactoryInterface;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\Data\AddressInterfaceFactory;
 use Magento\Quote\Api\ShipmentEstimationInterface;
@@ -36,6 +37,7 @@ use Psr\Log\LoggerInterface;
 use Vipps\Checkout\Api\Data\QuoteInterface;
 use Vipps\Checkout\Api\QuoteRepositoryInterface;
 use Vipps\Checkout\Model\CountryCodeLocator;
+use Vipps\Checkout\Model\Logistics\FixedOptionsProvider;
 use Vipps\Checkout\Model\Quote;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Api\Data\ShippingMethodInterface;
@@ -89,6 +91,14 @@ class Logistics implements ActionInterface, CsrfAwareActionInterface
      * @var CartRepositoryInterface
      */
     private $cartRepository;
+    /**
+     * @var FixedOptionsProvider
+     */
+    private $fixedOptionsProvider;
+    /**
+     * @var PaymentDataObjectFactoryInterface
+     */
+    private $paymentDataObjectFactory;
 
     /**
      * Logistics constructor.
@@ -102,6 +112,8 @@ class Logistics implements ActionInterface, CsrfAwareActionInterface
      * @param QuoteRepositoryInterface $quoteRepository
      * @param CountryCodeLocator $countryCodeLocator
      * @param LoggerInterface $logger
+     * @param FixedOptionsProvider $fixedOptionsProvider
+     * @param PaymentDataObjectFactoryInterface $paymentDataObjectFactory
      *
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
@@ -114,7 +126,9 @@ class Logistics implements ActionInterface, CsrfAwareActionInterface
         CartRepositoryInterface $cartRepository,
         QuoteRepositoryInterface $quoteRepository,
         CountryCodeLocator $countryCodeLocator,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        FixedOptionsProvider $fixedOptionsProvider,
+        PaymentDataObjectFactoryInterface $paymentDataObjectFactory
     ) {
         $this->resultFactory = $resultFactory;
         $this->request = $request;
@@ -125,6 +139,8 @@ class Logistics implements ActionInterface, CsrfAwareActionInterface
         $this->cartRepository = $cartRepository;
         $this->countryCodeLocator = $countryCodeLocator;
         $this->logger = $logger;
+        $this->fixedOptionsProvider = $fixedOptionsProvider;
+        $this->paymentDataObjectFactory = $paymentDataObjectFactory;
     }
 
     /**
@@ -248,6 +264,12 @@ class Logistics implements ActionInterface, CsrfAwareActionInterface
                 'description' => $shippingMethod->getCarrierTitle() . ' ' . $shippingMethod->getMethodTitle(),
                 'isPickupPoint' => false
             ];
+        }
+
+        $payment = $this->paymentDataObjectFactory->create($quote->getPayment());
+        $fixedOptions = $this->fixedOptionsProvider->get($payment->getOrder());
+        if ($fixedOptions) {
+            $responseData = array_merge($responseData, $fixedOptions);
         }
 
         return $responseData;
