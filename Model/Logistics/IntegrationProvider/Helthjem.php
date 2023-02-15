@@ -19,9 +19,9 @@ namespace Vipps\Checkout\Model\Logistics\IntegrationProvider;
 use Magento\Shipping\Helper\Carrier;
 use Vipps\Checkout\Api\Logistics\IntegrationProviderInterface;
 
-class Porterbuddy implements IntegrationProviderInterface
+class Helthjem implements IntegrationProviderInterface
 {
-    public const CARRIER_CODE = 'vipps_porterbuddy';
+    public const CARRIER_CODE = 'vipps_helthjem';
     /**
      * @var Carrier
      */
@@ -44,20 +44,10 @@ class Porterbuddy implements IntegrationProviderInterface
         }
 
         return [
-            'porterbuddy' => [
-                'publicToken' => $this->getValue('public_token'),
-                'apiKey' => $this->getValue('api_key'),
-                'origin' => [
-                    'name' => $this->getValue('origin_name'),
-                    'email' => $this->getValue('origin_email'),
-                    'phoneNumber' => $this->getValue('origin_phone'),
-                    'address' => [
-                        'StreetAddress' => $this->getValue('origin_address_street'),
-                        'PostalCode' => $this->getValue('origin_address_zip'),
-                        'City' => $this->getValue('origin_address_city'),
-                        'Country' => $this->getValue('origin_address_country'),
-                    ]
-                ]
+            'helthjem' => [
+                'username' => $this->getValue('username'),
+                'password' => $this->getValue('password'),
+                'shopId' => $this->getValue('shop_id'),
             ]
         ];
     }

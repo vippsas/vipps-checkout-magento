@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<!--
+  ~ Copyright 2022 Vipps
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+  ~ documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+  ~ the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+  ~ and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+  ~ TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL
+  ~ THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+  ~ CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+  ~ IN THE SOFTWARE.
+  -->
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
+    <group id="vipps_helthjem" translate="label" type="multiselect" sortOrder="50"
+           showInDefault="1" showInWebsite="1" showInStore="1">
+        <label>[Vipps] Helthjem</label>
+        <field id="active" translate="label" type="select" showInDefault="1" showInWebsite="1"
+               showInStore="1" sortOrder="4">
+            <label>Enable Helthjem Shipping integration</label>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>carriers/vipps_helthjem/active</config_path>
+        </field>
+        <field id="username" translate="label"
+               sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Username</label>
+            <config_path>carriers/vipps_helthjem/username</config_path>
+            <depends>
+                <field id="active">1</field>
+            </depends>
+        </field>
+        <field id="password" translate="label" type="obscure" sortOrder="30"
+               showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Password</label>
+            <config_path>carriers/vipps_helthjem/password</config_path>
+            <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+            <depends>
+                <field id="active">1</field>
+            </depends>
+        </field>
+        <field id="shop_id" translate="label" sortOrder="30"
+               showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Shop Id</label>
+            <config_path>carriers/vipps_helthjem/shop_id</config_path>
+            <depends>
+                <field id="active">1</field>
+            </depends>
+        </field>
+    </group>
+</include>

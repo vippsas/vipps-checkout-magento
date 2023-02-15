@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<!--
+  ~ Copyright 2022 Vipps
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+  ~ documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+  ~ the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+  ~ and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+  ~ TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL
+  ~ THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+  ~ CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+  ~ IN THE SOFTWARE.
+  -->
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
+    <group id="vipps_porterbuddy" translate="label" type="multiselect" sortOrder="50"
+           showInDefault="1" showInWebsite="1" showInStore="1">
+        <label>[Vipps] Porterbuddy</label>
+        <field id="active" translate="label" type="select" showInDefault="1" showInWebsite="1"
+               showInStore="1" sortOrder="4">
+            <label>Enable Porterbuddy Shipping integration</label>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>carriers/vipps_porterbuddy/active</config_path>
+        </field>
+        <field id="public_token" translate="label"
+               sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Public Token</label>
+            <comment>
+                <![CDATA[Public Token]]>
+            </comment>
+            <config_path>carriers/vipps_porterbuddy/public_token</config_path>
+            <depends>
+                <field id="active">1</field>
+            </depends>
+        </field>
+        <field id="api_key" translate="label" type="obscure" sortOrder="30"
+               showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Api Key</label>
+            <comment>
+                <![CDATA[Api Key]]>
+            </comment>
+            <config_path>carriers/vipps_porterbuddy/api_key</config_path>
+            <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+            <depends>
+                <field id="active">1</field>
+            </depends>
+        </field>
+        <group id="origin" translate="label" showInDefault="1" showInWebsite="1" showInStore="1"
+               sortOrder="40">
+            <depends>
+                <field id="active">1</field>
+            </depends>
+            <label>Origin</label>
+            <field id="origin_name" translate="label" sortOrder="1" showInDefault="1"
+                   showInWebsite="1" showInStore="10">
+                <label>Name</label>
+                <config_path>carriers/vipps_porterbuddy/origin_name</config_path>
+            </field>
+            <field id="origin_email" translate="label" sortOrder="1" showInDefault="1"
+                   showInWebsite="1" showInStore="20">
+                <label>Email</label>
+                <config_path>carriers/vipps_porterbuddy/origin_email</config_path>
+            </field>
+            <field id="origin_phone" translate="label" sortOrder="1" showInDefault="1"
+                   showInWebsite="1" showInStore="30">
+                <label>Phone Number</label>
+                <config_path>carriers/vipps_porterbuddy/origin_phone</config_path>
+            </field>
+            <field id="origin_address_street" translate="label" sortOrder="1" showInDefault="1"
+                   showInWebsite="1" showInStore="40">
+                <label>Street Address</label>
+                <config_path>carriers/vipps_porterbuddy/origin_address_street</config_path>
+            </field>
+            <field id="origin_address_zip" translate="label" sortOrder="1" showInDefault="1"
+                   showInWebsite="1" showInStore="40">
+                <label>Postal Code</label>
+                <config_path>carriers/vipps_porterbuddy/origin_address_zip</config_path>
+            </field>
+            <field id="origin_address_city" translate="label" sortOrder="1" showInDefault="1"
+                   showInWebsite="1" showInStore="40">
+                <label>City</label>
+                <config_path>carriers/vipps_porterbuddy/origin_address_city</config_path>
+            </field>
+            <field id="origin_address_country" translate="label" type="select" sortOrder="1"
+                   showInDefault="1" showInWebsite="1" showInStore="40">
+                <label>Country</label>
+                <config_path>carriers/vipps_porterbuddy/origin_address_country</config_path>
+                <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+            </field>
+        </group>
+    </group>
+</include>

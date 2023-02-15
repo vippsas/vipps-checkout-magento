@@ -14,15 +14,7 @@
   ~ IN THE SOFTWARE.
   -->
 <include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
-    <group id="checkout" translate="label" type="multiselect" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
-        <label>Checkout</label>
-        <field id="checkout_active" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="1" sortOrder="4">
-            <label>Enable Vipps Checkout</label>
-            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-            <config_path>payment/vipps_v2/checkout_active</config_path>
-            <requires>
-                <group id="vipps_required"/>
-            </requires>
-        </field>
-    </group>
+    <include path="Vipps_Checkout::system/carriers/porterbuddy.xml"/>
+    <include path="Vipps_Checkout::system/carriers/instabox.xml"/>
+    <include path="Vipps_Checkout::system/carriers/helthjem.xml"/>
 </include>

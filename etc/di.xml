@@ -48,12 +48,9 @@
         <arguments>
             <argument name="providers" xsi:type="array">
                 <item name="porterbuddy" xsi:type="string">Vipps\Checkout\Model\Logistics\IntegrationProvider\Porterbuddy</item>
+                <item name="instabox" xsi:type="string">Vipps\Checkout\Model\Logistics\IntegrationProvider\Instabox</item>
+                <item name="helthjem" xsi:type="string">Vipps\Checkout\Model\Logistics\IntegrationProvider\Helthjem</item>
             </argument>
-        </arguments>
-    </type>
-    <type name="Vipps\Checkout\Model\Logistics\IntegrationProvider\Porterbuddy">
-        <arguments>
-            <argument name="config" xsi:type="object">Vipps\Checkout\Gateway\Config\Config</argument>
         </arguments>
     </type>
 

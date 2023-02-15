@@ -79,5 +79,8 @@
                 </group>
             </group>
         </section>
+        <section id="carriers">
+            <include path="Vipps_Checkout::system/carriers.xml"/>
+        </section>
     </system>
 </config>
