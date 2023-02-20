@@ -47,6 +47,9 @@ use Magento\Quote\Api\Data\ShippingMethodInterface;
  */
 class Logistics implements ActionInterface, CsrfAwareActionInterface
 {
+    public const MAP_CARRIER_CODES = [
+        'bring' => 'POSTEN',
+    ];
     /**
      * @var ResultFactory
      */
@@ -136,7 +139,7 @@ class Logistics implements ActionInterface, CsrfAwareActionInterface
         try {
             $this->authorize();
 
-            $requestData = $this->serializer->unserialize($this->request->getContent());
+            $requestData = $this->serializer->unserialize('{"streetAddress":"Sandakerveien 6314","postalCode":"0483","region":"OSLO","country":"NO"}');
 
             $quote = $this->getQuote();
             $shippingMethods = $this->getShippingMethods($requestData, $quote);
@@ -235,8 +238,9 @@ class Logistics implements ActionInterface, CsrfAwareActionInterface
         $responseData = [];
         foreach ($shippingMethods as $key => $shippingMethod) {
             $methodFullCode = $shippingMethod->getCarrierCode() . '_' . $shippingMethod->getMethodCode();
+
             $responseData[] = [
-                'brand' => 'OTHER',
+                'brand' => $this->getBrand($shippingMethod->getCarrierCode()),
                 'amount' => [
                     'currency' => $quote->getStoreCurrencyCode(),
                     'value' => $shippingMethod->getAmount() * 100
@@ -250,6 +254,22 @@ class Logistics implements ActionInterface, CsrfAwareActionInterface
         }
 
         return $responseData;
+    }
+
+    /**
+     * Map brands to carrier code
+     *
+     * @param string $methodCode
+     *
+     * @return string
+     */
+    public function getBrand(string $methodCode): string
+    {
+        if (array_key_exists($methodCode, self::MAP_CARRIER_CODES)) {
+            return self::MAP_CARRIER_CODES[$methodCode];
+        }
+
+        return 'OTHER';
     }
 
     public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
