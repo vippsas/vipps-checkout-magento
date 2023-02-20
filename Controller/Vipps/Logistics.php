@@ -47,6 +47,10 @@ use Magento\Quote\Api\Data\ShippingMethodInterface;
  */
 class Logistics implements ActionInterface, CsrfAwareActionInterface
 {
+    /**
+     * Use this constant to map Magento Carrier codes to Vipps carrier codes.
+     * @var string
+     */
     public const MAP_CARRIER_CODES = [
         'bring' => 'POSTEN',
     ];
