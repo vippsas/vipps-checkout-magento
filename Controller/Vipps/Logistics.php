@@ -143,7 +143,7 @@ class Logistics implements ActionInterface, CsrfAwareActionInterface
         try {
             $this->authorize();
 
-            $requestData = $this->serializer->unserialize('{"streetAddress":"Sandakerveien 6314","postalCode":"0483","region":"OSLO","country":"NO"}');
+            $requestData = $this->serializer->unserialize($this->request->getContent());
 
             $quote = $this->getQuote();
             $shippingMethods = $this->getShippingMethods($requestData, $quote);
