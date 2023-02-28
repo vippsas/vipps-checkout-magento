@@ -39,6 +39,7 @@ use Vipps\Checkout\Model\CountryCodeLocator;
 use Vipps\Checkout\Model\Quote;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Api\Data\ShippingMethodInterface;
+use Vipps\Checkout\Api\Delivery\MethodMappingInterface;
 
 /**
  * Class Logistics
@@ -235,8 +236,10 @@ class Logistics implements ActionInterface, CsrfAwareActionInterface
         $responseData = [];
         foreach ($shippingMethods as $key => $shippingMethod) {
             $methodFullCode = $shippingMethod->getCarrierCode() . '_' . $shippingMethod->getMethodCode();
+
             $responseData[] = [
-                'brand' => 'OTHER',
+                'brand' => $this->getBrand($shippingMethod->getCarrierCode()),
+                'type' => $this->getDeliveryType((string)$shippingMethod->getMethodCode()),
                 'amount' => [
                     'currency' => $quote->getStoreCurrencyCode(),
                     'value' => $shippingMethod->getAmount() * 100
@@ -250,6 +253,32 @@ class Logistics implements ActionInterface, CsrfAwareActionInterface
         }
 
         return $responseData;
+    }
+
+    /**
+     * Map brands to carrier code
+     *
+     * @param string $carrierCode
+     *
+     * @return string
+     */
+    public function getBrand(string $carrierCode): string
+    {
+        if (array_key_exists($carrierCode, MethodMappingInterface::CARRIER_CODE)) {
+            return MethodMappingInterface::CARRIER_CODE[$carrierCode];
+        }
+
+        return 'OTHER';
+    }
+
+    /**
+     * @param string $methodCode
+     *
+     * @return null|string
+     */
+    public function getDeliveryType(string $methodCode): ?string
+    {
+        return MethodMappingInterface::METHOD_CODE[$methodCode] ?? null;
     }
 
     public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
