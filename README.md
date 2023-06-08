@@ -13,9 +13,9 @@ END_METADATA -->
 💥 Please use the plugin pages on [https://developer.vippsmobilepay.com](https://developer.vippsmobilepay.com/docs/vipps-plugins/). 💥
 <!-- END_COMMENT -->
 
-This module is hosted on [GitHub](https://github.com/vippsas/vipps-checkout-magento).
-
 Vipps is the leading provider of smart payments in the Nordic region. Our goal is to engage and excite people every day through world-class simplification. We are collectively owned by 110 banks in Norway and provide a broad range of payment and digital identification services. The Vipps mobile wallet has achieved worldwide attention, and is widely recognized for its success, having achieved nearly 80 percent market penetration in the Norwegian market.
+
+This module is hosted on [GitHub](https://github.com/vippsas/vipps-checkout-magento).
 
 ## Requirements/Prerequisites
 
@@ -39,9 +39,3 @@ With this extension, your customers will be able to choose Vipps, VISA or Master
 ## Security Features
 
 Vipps offers PCI DSS compliant payment services. No cardholder data or sensitive authentication data is stored in Magento. All PCI DSS relevant information is sent directly to PCI DSS validated servers. This means that Vipps payments services will not increase the merchant's PCI DSS scope. Additionally, no personal information is stored in Magento.
-
-### Vipps contact information
-
-Please follow this [instruction](https://developer.vippsmobilepay.com/docs/vipps-developers/contact/) to contact us.
-
-For plugin related issues, please submit an issue on the plugins GitHub repo [for Magento](https://github.com/vippsas/vipps-checkout-magento) or contact [developer@vippsmobilepay.com](mailto:developer@vippsmobilepay.com).
