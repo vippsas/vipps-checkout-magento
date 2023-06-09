@@ -1,13 +1,15 @@
 <!-- START_METADATA
 ---
-title: Checkout Module for Magento 2
+title: Vipps Checkout Module for Magento 2
 sidebar_position: 1
 pagination_next: null
 pagination_prev: null
 ---
 END_METADATA -->
 
-# Checkout Module for Magento 2
+# Vipps Checkout Module for Magento 2
+
+*This plugin is built and maintained by [Vaimo](https://www.vaimo.com/) and is hosted on [GitHub](https://github.com/vippsas/vipps-checkout-magento).*
 
 <!-- START_COMMENT -->
 💥 Please use the plugin pages on [https://developer.vippsmobilepay.com](https://developer.vippsmobilepay.com/docs/vipps-plugins/). 💥
@@ -15,16 +17,14 @@ END_METADATA -->
 
 Vipps is the leading provider of smart payments in the Nordic region. Our goal is to engage and excite people every day through world-class simplification. We are collectively owned by 110 banks in Norway and provide a broad range of payment and digital identification services. The Vipps mobile wallet has achieved worldwide attention, and is widely recognized for its success, having achieved nearly 80 percent market penetration in the Norwegian market.
 
-This module is hosted on [GitHub](https://github.com/vippsas/vipps-checkout-magento).
-
 ## Requirements/Prerequisites
 
 * Magento 2.2+
   * [Magento 2 System Requirements](http://devdocs.magento.com/magento-system-requirements.html)
 * SSL is installed on your site and active on the Checkout page
 * Supported protocols HTTP1/HTTP1.1
-  * Magento relies on the [Zend Framework](https://framework.zend.com), which does not support HTTP/2.
-  * HTTP/1.1 must therefore be "forced", typically by using [CPanel](https://documentation.cpanel.net/display/EA4/Apache+Module%3A+HTTP2) or similar.
+  * Magento relies on the [Zend Framework](https://framework.zend.com), which does not support HTTP/2
+  * HTTP/1.1 must therefore be "forced", typically by using [CPanel](https://documentation.cpanel.net/display/EA4/Apache+Module%3A+HTTP2) or similar
 * A verified Vipps Checkout merchant account - [sign up here](https://portal.vipps.no/register/vippscheckout)
 
 ## Account & Pricing
