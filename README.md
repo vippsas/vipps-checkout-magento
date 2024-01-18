@@ -31,12 +31,12 @@ Vipps is the leading provider of smart payments in the Nordic region. Our goal i
 * Supported protocols HTTP1/HTTP1.1
   * Magento relies on the [Zend Framework](https://framework.zend.com), which does not support HTTP/2
   * HTTP/1.1 must therefore be "forced", typically by using [CPanel](https://documentation.cpanel.net/display/EA4/Apache+Module%3A+HTTP2) or similar
-* A verified Vipps Checkout merchant account - [sign up here](https://portal.vipps.no/register/vippscheckout)
+* A verified Vipps Checkout merchant account - [sign up here](https://portal.vippsmobilepay.com/register/vippscheckout)
 
 ## Account & Pricing
 
 Use of Vipps Checkout module requires an agreement with Vipps. Additional fees apply.
-Log in and [register here to sign up](https://portal.vipps.no/register/vippscheckout) for an agreement.
+Log in and [register here to sign up](https://portal.vippsmobilepay.com/register/vippscheckout) for an agreement.
 
 ## Feature Highlights
 
