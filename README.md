@@ -2,6 +2,7 @@
 ---
 title: Vipps Checkout Module for Magento 2
 sidebar_position: 1
+description: Checkout Module for Magento allows customers to choose Vipps, VISA or MasterCard as a payment method directly in the checkout.
 pagination_next: null
 pagination_prev: null
 ---
@@ -21,7 +22,10 @@ END_METADATA -->
 <!-- START_COMMENT -->
 💥 Please use the plugin pages on [https://developer.vippsmobilepay.com](https://developer.vippsmobilepay.com/docs/plugins-ext/checkout-magento/). 💥
 <!-- END_COMMENT -->
+
 Vipps is the leading provider of smart payments in the Nordic region. Our goal is to engage and excite people every day through world-class simplification. We are collectively owned by 110 banks in Norway and provide a broad range of payment and digital identification services. The Vipps mobile wallet has achieved worldwide attention, and is widely recognized for its success, having achieved nearly 80 percent market penetration in the Norwegian market.
+
+Checkout Module for Magento allows customers to choose Vipps, VISA or MasterCard as a payment method directly in the checkout.
 
 ## Requirements/Prerequisites
 
