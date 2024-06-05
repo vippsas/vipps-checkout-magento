@@ -30,16 +30,16 @@ Vipps MobilePay is the leading provider of smart payments in the Nordic region. 
 ## Requirements/Prerequisites
 
 * Magento 2.2+
-  * [System Requirements](http://devdocs.magento.com/magento-system-requirements.html)
+  * [System Requirements](https://developer.adobe.com/commerce/docs/)
 * SSL is installed on your site and active on the Checkout page
 * Supported protocols HTTP1/HTTP1.1
   * Magento relies on the [Zend Framework](https://framework.zend.com), which does not support HTTP/2
-  * HTTP/1.1 must therefore be "forced", typically by using [CPanel](https://documentation.cpanel.net/display/EA4/Apache+Module%3A+HTTP2) or similar
-* A verified Vipps Checkout merchant account - [sign up here](https://portal.vippsmobilepay.com/register/vippscheckout)
+  * HTTP/1.1 must therefore be "forced", typically by using [CPanel](https://api.docs.cpanel.net/) or similar
+* A verified Vipps MobilePay Checkout merchant account - [sign up here](https://portal.vippsmobilepay.com/register/vippscheckout)
 
 ## Account and Pricing
 
-Use of Vipps Checkout module requires an agreement with Vipps. Additional fees apply.
+Use of Checkout module requires an agreement with Vipps MobilePay. Additional fees apply.
 Log in and [register here](https://portal.vippsmobilepay.com/register/vippscheckout) to sign up for an agreement.
 
 ## Feature Highlights
