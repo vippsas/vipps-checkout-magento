@@ -40,7 +40,7 @@ Vipps MobilePay is the leading provider of smart payments in the Nordic region. 
 ## Account and Pricing
 
 Use of Checkout module requires an agreement with Vipps MobilePay. Additional fees apply.
-Log in and [register here](https://portal.vippsmobilepay.com/register/vippscheckout) to sign up for an agreement.
+To sign up for an agreement, register on [https://portal.vippsmobilepay.com](https://portal.vippsmobilepay.com/register/vippscheckout).
 
 ## Feature Highlights
 
