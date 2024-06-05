@@ -29,22 +29,22 @@ Vipps MobilePay is the leading provider of smart payments in the Nordic region. 
 
 ## Requirements/Prerequisites
 
-* Magento 2.2+
+* Adobe Commerce 2.2+
   * [System Requirements](https://developer.adobe.com/commerce/docs/)
 * SSL is installed on your site and active on the Checkout page
 * Supported protocols HTTP1/HTTP1.1
-  * Magento relies on the [Zend Framework](https://framework.zend.com), which does not support HTTP/2
+  * Adobe Commerce relies on the [Zend Framework](https://framework.zend.com), which does not support HTTP/2
   * HTTP/1.1 must therefore be "forced", typically by using [CPanel](https://api.docs.cpanel.net/) or similar
-* A verified Vipps MobilePay Checkout merchant account - [sign up here](https://portal.vippsmobilepay.com/register/vippscheckout)
+* A verified Vipps MobilePay Checkout merchant account
 
 ## Account and Pricing
 
-Use of Checkout module requires an agreement with Vipps MobilePay. Additional fees apply.
+Use of the Vipps Checkout module requires an agreement with Vipps MobilePay. Additional fees apply.
 To sign up for an agreement, register on [https://portal.vippsmobilepay.com](https://portal.vippsmobilepay.com/register/vippscheckout).
 
 ## Feature Highlights
 
-With this extension, your customers will be able to choose Vipps, VISA or MasterCard as a payment method directly in the checkout. There is no need to go via a third party payment method. The customer is identified in the Checkout, and his/her address and contact details will be available to the webshop during the payment process. Shipping options will be displayed in the checkout for the customer to choose from.
+With this extension, your customers will be able to choose Vipps, VISA, or MasterCard as a payment method directly in the checkout. There is no need to go via a third party payment method. The customer is identified in the Checkout, and his/her address and contact details will be available to the webshop during the payment process. Shipping options will be displayed in the checkout for the customer to choose from.
 
 ## Security Features
 
