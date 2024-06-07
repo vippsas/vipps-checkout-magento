@@ -1,6 +1,6 @@
 <!-- START_METADATA
 ---
-title: Vipps Checkout Module for Adobe Commerce
+title: Vipps Checkout Module for Adobe Commerce / Magento
 sidebar_position: 1
 description: Checkout Module for Adobe Commerce allows customers to choose Vipps, VISA or MasterCard as a payment method directly in the checkout.
 pagination_next: null
@@ -8,14 +8,13 @@ pagination_prev: null
 ---
 END_METADATA -->
 
-# Checkout Module for Adobe Commerce
+# Checkout Module for Adobe Commerce / Magento
 
 ![Support and development by Vaimo ](./docs/images/vaimo.svg#gh-light-mode-only)![Support and development by Vaimo](./docs/images/vaimo_dark.svg#gh-dark-mode-only)
 
 ![Vipps](./docs/images/vipps.png) *Available for Vipps.*
 
 ![MobilePay](./docs/images/mp.png) *The availability for MobilePay has not been finalized yet.*
-
 
 *This plugin is built and maintained by [Vaimo](https://www.vaimo.com/) and is hosted on [GitHub](https://github.com/vippsas/vipps-checkout-magento).*
 
