@@ -94,5 +94,15 @@
                 </group>
             </group>
         </group>
+        <group id="external" translate="label" showInDefault="1" showInWebsite="1" showInStore="1" sortOrder="15">
+            <label>External</label>
+            <field id="payment_methods" translate="label" type="multiselect" showInDefault="1" sortOrder="10"
+                   showInWebsite="1"
+                   showInStore="1">
+                <label>Payment Methods</label>
+                <config_path>payment/vipps_v2/external_payment_methods</config_path>
+                <source_model>Vipps\Checkout\Model\Adminhtml\Config\Source\ExternalPayments</source_model>
+            </field>
+        </group>
     </group>
 </include>

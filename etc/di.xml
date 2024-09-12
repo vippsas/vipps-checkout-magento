@@ -163,6 +163,28 @@
             </argument>
         </arguments>
     </virtualType>
+
+    <virtualType name="klarnaExternalMethodVirtual" type="Vipps\Checkout\Gateway\Request\InitSession\ConfigurationDataBuilder\External\Method">
+        <arguments>
+            <argument name="name" xsi:type="string">Klarna</argument>
+            <argument name="url" xsi:type="string">checkout/klarna/</argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Vipps\Checkout\Gateway\Request\InitSession\ConfigurationDataBuilder\ExternalPaymentMethodsProvider">
+        <arguments>
+            <argument name="pool" xsi:type="array">
+                <item name="klarna" xsi:type="object">klarnaExternalMethodVirtual</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Vipps\Checkout\Gateway\Request\InitSession\ConfigurationDataBuilder">
+        <arguments>
+            <argument name="externalPaymentMethods" xsi:type="object">Vipps\Checkout\Gateway\Request\InitSession\ConfigurationDataBuilder\ExternalPaymentMethodsProvider</argument>
+        </arguments>
+    </type>
+
     <type name="Vipps\Checkout\Gateway\Request\InitSession\CustomerDataBuilder">
         <arguments>
             <argument name="customerSession" xsi:type="object">Magento\Customer\Model\Session\Proxy</argument>
@@ -196,6 +218,7 @@
                 <item name="customerInteraction" xsi:type="string">customerInteraction</item>
                 <item name="contactFields" xsi:type="string">contactFields</item>
                 <item name="addressFields" xsi:type="string">addressFields</item>
+                <item name="configuration" xsi:type="string">configuration</item>
             </argument>
         </arguments>
     </virtualType>
