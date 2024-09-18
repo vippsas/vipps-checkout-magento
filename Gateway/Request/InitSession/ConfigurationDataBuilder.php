@@ -17,6 +17,7 @@ namespace Vipps\Checkout\Gateway\Request\InitSession;
 
 use Magento\Payment\Gateway\Request\BuilderInterface;
 use Magento\Directory\Model\AllowedCountries;
+use Vipps\Checkout\Api\ExternalPaymentMethodProviderInterface;
 
 /**
  * Class ConfigurationDataBuilder
@@ -28,6 +29,7 @@ class ConfigurationDataBuilder implements BuilderInterface
      * @var AllowedCountries
      */
     private $allowedCountries;
+    private ExternalPaymentMethodProviderInterface $externalPaymentMethods;
 
     /**
      * ConfigurationDataBuilder constructor.
@@ -35,9 +37,11 @@ class ConfigurationDataBuilder implements BuilderInterface
      * @param AllowedCountries $allowedCountries
      */
     public function __construct(
-        AllowedCountries $allowedCountries
+        AllowedCountries $allowedCountries,
+        ExternalPaymentMethodProviderInterface $externalPaymentMethods,
     ) {
         $this->allowedCountries = $allowedCountries;
+        $this->externalPaymentMethods = $externalPaymentMethods;
     }
 
     /**
@@ -52,11 +56,11 @@ class ConfigurationDataBuilder implements BuilderInterface
     {
         $data = [];
 
-
         $data['customerInteraction'] = 'CUSTOMER_NOT_PRESENT';
         $data['elements'] = 'Full';
-        //$data['userFlow'] = 'WEB_REDIRECT'; //WEB_REDIRECT|NATIVE_REDIRECT
         $data['countries']['supported'] = $this->allowedCountries->getAllowedCountries();
+
+        $data['configuration']['externalPaymentMethods'] = $this->externalPaymentMethods->get();
 
         return $data;
     }
