@@ -16,7 +16,8 @@ END_METADATA -->
 
 ![MobilePay](./docs/images/mp.png) *The availability for MobilePay has not been finalized yet.*
 
-*This plugin is built and maintained by [Vaimo](https://www.vaimo.com/) and is hosted on [GitHub](https://github.com/vippsas/vipps-checkout-magento).*
+*This plugin is built and maintained by [Vaimo](https://www.vaimo.com/) and is hosted on [GitHub](https://github.com/vippsas/vipps-checkout-magento).
+For support, [submit an issue](https://github.com/vippsas/vipps-checkout-magento/issues) on GitHub.*
 
 <!-- START_COMMENT -->
 💥 Please use the plugin pages on [https://developer.vippsmobilepay.com](https://developer.vippsmobilepay.com/docs/plugins-ext/checkout-magento/). 💥
@@ -48,3 +49,8 @@ With this extension, your customers will be able to choose Vipps, VISA, or Maste
 ## Security Features
 
 Vipps MobilePay offers PCI DSS compliant payment services. No cardholder data or sensitive authentication data is stored in Adobe Commerce. All PCI DSS relevant information is sent directly to PCI DSS validated servers. This means that Vipps payments services will not increase the merchant's PCI DSS scope. Additionally, no personal information is stored in Adobe Commerce.
+
+## Support
+
+For problems with the plugin,
+[submit an issue](https://github.com/vippsas/vipps-checkout-magento/issues) on GitHub.
