@@ -12,9 +12,7 @@ END_METADATA -->
 
 ![Support and development by Vaimo ](./docs/images/vaimo.svg#gh-light-mode-only)![Support and development by Vaimo](./docs/images/vaimo_dark.svg#gh-dark-mode-only)
 
-![Vipps](./docs/images/vipps.png) *Available for Vipps.*
-
-![MobilePay](./docs/images/mp.png) *The availability for MobilePay has not been finalized yet.*
+![null](./docs/images/vipps.png) *Only available for Vipps.*
 
 *This plugin is built and maintained by [Vaimo](https://www.vaimo.com/) and is hosted on [GitHub](https://github.com/vippsas/vipps-checkout-magento).
 For support, [submit an issue](https://github.com/vippsas/vipps-checkout-magento/issues) on GitHub.*
@@ -25,7 +23,7 @@ For support, [submit an issue](https://github.com/vippsas/vipps-checkout-magento
 
 Vipps MobilePay is the leading provider of smart payments in the Nordic region. Our goal is to engage and excite people every day through world-class simplification. We are collectively owned by 110 banks in Norway and provide a broad range of payment and digital identification services. The Vipps mobile wallet has achieved worldwide attention, and is widely recognized for its success, having achieved nearly 80 percent market penetration in the Norwegian market.
 
-*Checkout Module for Adobe Commerce* allows customers to choose Vipps, VISA or MasterCard as a payment method directly in the checkout.
+*Checkout Module for Adobe Commerce* allows customers to choose Vipps, VISA, or MasterCard as a payment method directly in the checkout.
 
 ## Requirements/Prerequisites
 
