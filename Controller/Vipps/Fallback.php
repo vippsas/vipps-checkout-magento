@@ -189,7 +189,7 @@ class Fallback implements ActionInterface
      * @return Redirect
      * @throws \Exception
      */
-    private function prepareResponse(Redirect $resultRedirect, Session $session = null)
+    private function prepareResponse(Redirect $resultRedirect, ?Session $session = null)
     {
         $cartPersistent = $this->config->getValue('cancellation_cart_persistence');
 
