@@ -39,7 +39,7 @@ try {
                 <td><?= $item->getPaymentAction(); ?></td>
                 <td><span><?= $item->getAmount()->getValue(); ?> <?= $item->getAmount()->getCurrency(); ?></span></td>
                 <td><span><?= $item->getPspReference(); ?></span></td>
-                <td><span><?= (new \DateTime($item->getProcessedAt()))->format('d-m-Y H:i:s'); ?></span></td>
+                <td><span><?= (new \DateTime((string) $item->getTimestamp()))->format('d-m-Y H:i:s'); ?></span></td>
                 <td><span><?= $item->getSuccess() ? 'true' : 'false'; ?></span></td>
             </tr>
 <?php endforeach; ?>
