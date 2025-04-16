@@ -15,12 +15,13 @@
  */
 namespace Vipps\Checkout\Model;
 
+use Laminas\Http\Response;
 use Psr\Log\LoggerInterface;
 use Magento\Payment\Gateway\ConfigInterface;
 use Magento\Framework\App\ScopeResolverInterface;
 use Magento\Framework\Exception\CouldNotSaveException;
-use Magento\Framework\HTTP\ZendClientFactory;
-use Magento\Framework\HTTP\ZendClient;
+use Magento\Framework\HTTP\Adapter\Curl as MagentoCurl;
+use Magento\Framework\HTTP\Adapter\CurlFactory;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Serialize\Serializer\Json;
 use Vipps\Checkout\Api\TokenProviderInterface;
@@ -46,9 +47,9 @@ class TokenProvider implements TokenProviderInterface
     private static $endpointUrl = '/accessToken/get';
 
     /**
-     * @var ZendClientFactory
+     * @var CurlFactory
      */
-    private $httpClientFactory;
+    private $adapterFactory;
 
     /**
      * @var ResourceConnection
@@ -89,7 +90,7 @@ class TokenProvider implements TokenProviderInterface
      * TokenProvider constructor.
      *
      * @param ResourceConnection $resourceConnection
-     * @param ZendClientFactory $httpClientFactory
+     * @param CurlFactory $adapterFactory
      * @param ConfigInterface $config
      * @param Json $serializer,
      * @param LoggerInterface $logger
@@ -98,7 +99,7 @@ class TokenProvider implements TokenProviderInterface
      */
     public function __construct(
         ResourceConnection $resourceConnection,
-        ZendClientFactory $httpClientFactory,
+        CurlFactory $adapterFactory,
         ConfigInterface $config,
         Json $serializer,
         LoggerInterface $logger,
@@ -106,7 +107,7 @@ class TokenProvider implements TokenProviderInterface
         ScopeResolverInterface $scopeResolver
     ) {
         $this->resourceConnection = $resourceConnection;
-        $this->httpClientFactory = $httpClientFactory;
+        $this->adapterFactory = $adapterFactory;
         $this->config = $config;
         $this->serializer = $serializer;
         $this->logger = $logger;
@@ -161,26 +162,21 @@ class TokenProvider implements TokenProviderInterface
      */
     private function readJwt()
     {
-        /** Configuring headers for Vipps authentication method */
-        $headers = [
-            ClientInterface::HEADER_PARAM_CLIENT_ID => $this->config->getValue('client_id'),
-            ClientInterface::HEADER_PARAM_CLIENT_SECRET => $this->config->getValue('client_secret'),
-            ClientInterface::HEADER_PARAM_SUBSCRIPTION_KEY => $this->config->getValue('subscription_key1'),
-        ];
-        /** @var ZendClient $client */
-        $client = $this->httpClientFactory->create();
         try {
-            $client->setConfig(['strict' => false]);
-            $client->setUri($this->urlResolver->getUrl(self::$endpointUrl));
-            $client->setMethod(ZendClient::POST);
-            $client->setHeaders($headers);
-
-            /** Making request to Vipps
-             * @var $response \Zend_Http_Response
-             */
-            $response = $client->request();
+            /** @var MagentoCurl $adapter */
+            $adapter = $this->adapterFactory->create();
+            $headers = [
+                ClientInterface::HEADER_PARAM_CLIENT_ID . ': ' . $this->config->getValue('client_id'),
+                ClientInterface::HEADER_PARAM_CLIENT_SECRET . ': ' . $this->config->getValue('client_secret'),
+                ClientInterface::HEADER_PARAM_SUBSCRIPTION_KEY . ': ' . $this->config->getValue('subscription_key1'),
+                'Content-Type: application/json',
+                'Content-Length: 0'
+            ];
+            // send request
+            $adapter->write('POST', $this->urlResolver->getUrl(self::$endpointUrl), '1.1', $headers);
+            $response = Response::fromString($adapter->read());
             $jwt = $this->serializer->unserialize($response->getBody());
-            if (!$response->isSuccessful()) {
+            if (!$response->isSuccess()) {
                 throw new \Exception($response->getBody()); //@codingStandardsIgnoreLine
             }
             if (!$this->isJwtValid($jwt)) {
