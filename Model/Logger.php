@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2022 Vipps
+ * Copyright 2020 Vipps
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
  * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
@@ -15,20 +15,32 @@
  * IN THE SOFTWARE.
  */
 
-namespace Vipps\Checkout\Model\Logger\Handler;
+namespace Vipps\Checkout\Model;
 
-use Magento\Framework\Logger\Handler\Base;
-use Monolog\Logger;
+use DateTimeZone;
+use Magento\Payment\Gateway\ConfigInterface;
+use Monolog\Handler\HandlerInterface;
 
-class Debug extends Base
+class Logger extends \Monolog\Logger
 {
     /**
-     * @var string
+     * @param string $name
+     * @param ConfigInterface $config
+     * @param list<HandlerInterface> $handlers
+     * @param callable[] $processors
+     * @param DateTimeZone|null $timezone
      */
-    protected $fileName = '/var/log/vipps_debug.log';
+    public function __construct(
+        string $name,
+        ConfigInterface $config,
+        array $handlers = [],
+        array $processors = [],
+        ?DateTimeZone $timezone = null
+    ) {
+        if (!$config->getValue('debug')) {
+            unset($handlers['debug']);
+        }
 
-    /**
-     * @var int
-     */
-    protected $loggerType = Logger::DEBUG;
+        parent::__construct($name, $handlers, $processors, $timezone);
+    }
 }
