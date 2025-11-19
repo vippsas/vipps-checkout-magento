@@ -33,6 +33,7 @@ use Vipps\Checkout\Gateway\Data\Session;
 use Vipps\Checkout\Model\SessionProcessor;
 use Magento\Framework\Message\ManagerInterface;
 use Magento\Payment\Gateway\ConfigInterface;
+use Vipps\Checkout\Model\SessionManager;
 
 class Fallback implements ActionInterface
 {
@@ -84,6 +85,10 @@ class Fallback implements ActionInterface
      * @var LoggerInterface
      */
     private $logger;
+    /**
+     * @var SessionManager
+     */
+    private $sessionManager;
 
     /**
      * Fallback constructor.
@@ -98,6 +103,7 @@ class Fallback implements ActionInterface
      * @param RequestInterface $request
      * @param ResultFactory $resultFactory
      * @param LoggerInterface $logger
+     * @param SessionManager $sessionManager
      */
     public function __construct(
         CheckoutSession $checkoutSession,
@@ -109,7 +115,8 @@ class Fallback implements ActionInterface
         ConfigInterface $config,
         RequestInterface $request,
         ResultFactory $resultFactory,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        SessionManager $sessionManager
     ) {
         $this->checkoutSession = $checkoutSession;
         $this->cartRepository = $cartRepository;
@@ -121,6 +128,7 @@ class Fallback implements ActionInterface
         $this->request = $request;
         $this->resultFactory = $resultFactory;
         $this->logger = $logger;
+        $this->sessionManager = $sessionManager;
     }
 
     public function execute()
@@ -134,9 +142,15 @@ class Fallback implements ActionInterface
             $this->authorize();
 
             $vippsQuote = $this->getVippsQuote();
-            $session = $this->sessionProcessor->process($vippsQuote);
-
-            $this->defineMessage($session);
+            if ($vippsQuote->getStatus() === Quote::STATUS_CANCELED) {
+                $this->messageManager->addWarningMessage(__('Your order was cancelled in Vipps.'));
+            } elseif ($vippsQuote->getStatus() === Quote::STATUS_NEW) {
+                $session = $this->sessionProcessor->process($vippsQuote);
+                $this->defineMessage($session);
+            } else {
+                $session = $this->sessionManager->getSession($vippsQuote->getCheckoutSessionId());
+                $this->defineMessage($session);
+            }
         } catch (LocalizedException $e) {
             $this->logger->critical($this->wrapExceptionMessage($e));
             $this->messageManager->addErrorMessage($e->getMessage());
@@ -161,6 +175,12 @@ class Fallback implements ActionInterface
         }
 
         $vippsQuote = $this->getVippsQuote();
+        if ($vippsQuote->getStatus() === Quote::STATUS_CANCELED) {
+            return;
+        }
+        if ($vippsQuote->getStatus() === Quote::STATUS_RESERVED) {
+            return;
+        }
         if ($vippsQuote->getStatus() !== Quote::STATUS_NEW) {
             throw new LocalizedException(__('Invalid request'));
         }
