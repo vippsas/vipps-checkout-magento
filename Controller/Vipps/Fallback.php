@@ -134,9 +134,12 @@ class Fallback implements ActionInterface
             $this->authorize();
 
             $vippsQuote = $this->getVippsQuote();
-            $session = $this->sessionProcessor->process($vippsQuote);
-
-            $this->defineMessage($session);
+            if ($vippsQuote->getStatus() === Quote::STATUS_CANCELED) {
+                $this->messageManager->addWarningMessage(__('Your order was cancelled in Vipps.'));
+            } else {
+                $session = $this->sessionProcessor->process($vippsQuote);
+                $this->defineMessage($session);
+            }
         } catch (LocalizedException $e) {
             $this->logger->critical($this->wrapExceptionMessage($e));
             $this->messageManager->addErrorMessage($e->getMessage());
@@ -158,11 +161,6 @@ class Fallback implements ActionInterface
     {
         if (!$this->request->getParam('reference')) {
             throw new LocalizedException(__('Invalid request parameters'));
-        }
-
-        $vippsQuote = $this->getVippsQuote();
-        if ($vippsQuote->getStatus() !== Quote::STATUS_NEW) {
-            throw new LocalizedException(__('Invalid request'));
         }
     }
 
