@@ -118,7 +118,6 @@ class TransferFactory implements TransferFactoryInterface
         foreach ($this->urlParams as $paramValue) {
             if (isset($request[$paramValue])) {
                 $endpointUrl = str_replace(':' . $paramValue, $request[$paramValue], $this->endpointUrl);
-                $this->urlParams[$paramValue] = $request[$paramValue];
             }
         }
         return $this->urlResolver->getUrl($endpointUrl);
