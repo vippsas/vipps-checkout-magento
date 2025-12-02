@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog and this project adheres to Semantic Versioning.
 
+## [1.1.0] - 2025-12-02
+### Added
+- Add support for Magento 2.4.8
+
+### Changed
+- Updated Monolog dependency to version 3.x to support Magento 2.4.8
+
 ## [1.0.2] - 2025-12-02
 ### Added
 - Add PHP 8.4 compatibility

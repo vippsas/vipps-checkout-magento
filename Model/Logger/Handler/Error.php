@@ -16,7 +16,7 @@
 namespace Vipps\Checkout\Model\Logger\Handler;
 
 use Magento\Framework\Logger\Handler\Base;
-use Monolog\Logger;
+use Monolog\Level;
 
 /**
  * Class Error
@@ -32,5 +32,5 @@ class Error extends Base
     /**
      * @var int
      */
-    protected $loggerType = Logger::INFO; //@codingStandardsIgnoreLine
+    protected $loggerType = Level::Info; //@codingStandardsIgnoreLine
 }
