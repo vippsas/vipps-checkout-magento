@@ -18,8 +18,7 @@ namespace Vipps\Checkout\Model\Logger\Handler;
 use Magento\Framework\Filesystem\DriverInterface;
 use Magento\Framework\Logger\Handler\Base;
 use Magento\Payment\Gateway\ConfigInterface;
-use Monolog\Level;
-use Monolog\LogRecord;
+use Monolog\Logger;
 
 /**
  * Class Debug
@@ -35,7 +34,7 @@ class Debug extends Base
     /**
      * @var int
      */
-    protected $loggerType = Level::Debug; //@codingStandardsIgnoreLine
+    protected $loggerType = Logger::DEBUG; //@codingStandardsIgnoreLine
 
     /**
      * @var ConfigInterface
@@ -51,8 +50,8 @@ class Debug extends Base
      */
     public function __construct(
         DriverInterface $filesystem,
-        ?ConfigInterface $config = null,
-        ?string $filePath = null
+        ConfigInterface $config = null,
+        string $filePath = null
     ) {
         parent::__construct($filesystem, $filePath);
         $this->config = $config;
@@ -61,11 +60,11 @@ class Debug extends Base
     /**
      * {@inheritdoc}
      *
-     * @param LogRecord $record
+     * @param array $record
      *
      * @return bool
      */
-    public function isHandling(LogRecord $record): bool
+    public function isHandling(array $record): bool
     {
         if ($this->config && (bool)$this->config->getValue('debug')) {
             return parent::isHandling($record);
