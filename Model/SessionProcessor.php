@@ -16,6 +16,9 @@
 
 namespace Vipps\Checkout\Model;
 
+use Vipps\Checkout\Model\Quote\CancelFacade;
+use Vipps\Checkout\Gateway\Request\SubjectReader;
+use Vipps\Checkout\Api\Quote\CancelFacadeInterface;
 use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\InputException;
@@ -42,6 +45,7 @@ use Vipps\Checkout\Gateway\Exception\WrongAmountException;
 use Vipps\Checkout\Gateway\Data\Session;
 use Vipps\Checkout\Model\Adminhtml\Config\Source\PaymentAction;
 use Vipps\Checkout\Model\Exception\AcquireLockException;
+use Vipps\Checkout\Api\QuoteRepositoryInterface as VippsQuoteRepositoryInterface;
 
 /**
  * Class SessionProcessor
@@ -125,6 +129,9 @@ class SessionProcessor
      * @var ResourceConnection
      */
     private $resourceConnection;
+    private ?CancelFacadeInterface $cancelFacade;
+    private ?SubjectReader $subjectReader;
+    private ?VippsQuoteRepositoryInterface $vippsQuoteRepository;
 
     /**
      * SessionProcessor constructor.
@@ -162,7 +169,10 @@ class SessionProcessor
         SessionManager $sessionManager,
         ReceiptSender $receiptSender,
         LoggerInterface $logger,
-        ResourceConnection $resourceConnection
+        ResourceConnection $resourceConnection,
+        CancelFacade $cancelFacade,
+        SubjectReader $subjectReader,
+        VippsQuoteRepositoryInterface $vippsQuoteRepository
     ) {
         $this->orderRepository = $orderRepository;
         $this->cartRepository = $cartRepository;
@@ -179,6 +189,9 @@ class SessionProcessor
         $this->receiptSender = $receiptSender;
         $this->logger = $logger;
         $this->resourceConnection = $resourceConnection;
+        $this->cancelFacade = $cancelFacade;
+        $this->subjectReader = $subjectReader;
+        $this->vippsQuoteRepository = $vippsQuoteRepository;
     }
 
     /**
@@ -265,6 +278,31 @@ class SessionProcessor
         $this->quoteManagement->save($vippsQuote);
 
         return $order;
+    }
+
+    /**
+     * Cancel Vipps order when validation fails
+     *
+     * @param array $commandSubject
+     * @return void
+     */
+    private function cancelVippsOrderOnValidationFailure(QuoteInterface $vippsQuote): void
+    {
+        if (!$this->cancelFacade || !$this->vippsQuoteRepository || !$this->subjectReader) {
+            $this->logger->warning('Cannot cancel Vipps order on validation failure - missing dependencies');
+            return;
+        }
+
+        try {
+            $this->logger->info('Cancelling Vipps order due to validation failure', [
+                'reserved_order_id' => $vippsQuote->getReservedOrderId()
+            ]);
+            $this->cancelFacade->cancel($vippsQuote);
+        } catch (\Throwable $e) {
+            $this->logger->critical('Failed to cancel Vipps order on validation failure: ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
+        }
     }
 
     /**
@@ -372,7 +410,7 @@ class SessionProcessor
         $quote->getShippingAddress()->setCollectShippingRates(true);
         $quote->collectTotals();
 
-        $this->validateAmount($quote, $session);
+        $this->validateAmount($quote, $session, $vippsQuote);
 
         // set quote active, collect totals and place order
         $quote->setIsActive(true);
@@ -408,12 +446,14 @@ class SessionProcessor
      * @return void
      * @throws WrongAmountException
      */
-    private function validateAmount(CartInterface $quote, Session $session)
+    private function validateAmount(CartInterface $quote, Session $session, QuoteInterface $vippsQuote)
     {
         $quoteAmount = (int)round($this->formatPrice($quote->getGrandTotal()) * 100);
         $vippsAmount = (int)$session->getPaymentDetails()->getAmount()->getValue();
 
+
         if ($quoteAmount !== $vippsAmount) {
+            $this->cancelVippsOrderOnValidationFailure($vippsQuote);
             throw new WrongAmountException(
                 __("Quote Grand Total {$quoteAmount} does not match Transaction Amount {$vippsAmount}")
             );

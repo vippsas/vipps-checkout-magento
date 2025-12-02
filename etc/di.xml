@@ -423,6 +423,12 @@
             <argument name="logger" xsi:type="object">Vipps\Checkout\Model\Logger</argument>
         </arguments>
     </type>
+
+    <type name="Vipps\Checkout\Controller\Vipps\Logistics">
+        <arguments>
+            <argument name="logger" xsi:type="object">Vipps\Checkout\Model\Logger</argument>
+        </arguments>
+    </type>
     <type name="Vipps\Checkout\Observer\CheckoutSubmitAllAfter">
         <arguments>
             <argument name="logger" xsi:type="object">Vipps\Checkout\Model\Logger</argument>
@@ -588,4 +594,11 @@
             <argument name="type" xsi:type="const">Vipps\Checkout\Model\Profiling\TypeInterface::SEND_RECEIPT</argument>
         </arguments>
     </virtualType>
+
+    <!-- Checkout Layout -->
+    <type name="Magento\Checkout\Block\Checkout\LayoutProcessor">
+        <plugin name="vipps_remove_summary_blocks"
+            type="Vipps\Checkout\Plugin\CheckoutLayout"/>
+    </type>
+    <!-- Checkout Layout end -->
 </config>

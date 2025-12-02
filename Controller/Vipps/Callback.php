@@ -141,8 +141,7 @@ class Callback implements ActionInterface, CsrfAwareActionInterface
 
     private function authorize()
     {
-
-        if (isset($this->requestData['reference'])) {
+        if (!isset($this->requestData['reference'])) {
             throw new LocalizedException(__('Invalid request parameters'));
         }
     }

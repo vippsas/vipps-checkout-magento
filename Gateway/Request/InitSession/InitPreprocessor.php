@@ -15,7 +15,11 @@
  */
 namespace Vipps\Checkout\Gateway\Request\InitSession;
 
+use Vipps\Checkout\Model\QuoteFactory;
+use Vipps\Checkout\Model\QuoteRepository;
+use Vipps\Checkout\Api\Data\QuoteInterface;
 use Magento\Payment\Gateway\Request\BuilderInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Payment\Gateway\Data\PaymentDataObjectInterface;
 use Magento\Quote\Model\Quote\Payment as QuotePayment;
 use Vipps\Checkout\Gateway\Request\SubjectReader;
@@ -38,7 +42,9 @@ class InitPreprocessor implements BuilderInterface
      * @param SubjectReader $subjectReader
      */
     public function __construct(
-        SubjectReader $subjectReader
+        SubjectReader $subjectReader,
+        private QuoteFactory $quoteFactory,
+        private QuoteRepository $quoteRepository,
     ) {
         $this->subjectReader = $subjectReader;
     }
@@ -66,6 +72,21 @@ class InitPreprocessor implements BuilderInterface
 
             $quote->getPayment()
                 ->setAdditionalInformation(Vipps::METHOD_TYPE_KEY, Vipps::METHOD_TYPE_CHECKOUT);
+
+            try {
+                $vippsQuote = $this->quoteRepository->loadNewByQuote($quote->getId());
+
+            } catch (NoSuchEntityException $e) {
+                /** @var QuoteInterface $vippsQuote */
+                $vippsQuote = $this->quoteFactory->create();
+                $vippsQuote->setStoreId($quote->getStoreId());
+                $vippsQuote->setQuoteId((int) $quote->getId());
+                $vippsQuote->setStatus(QuoteInterface::STATUS_NEW);
+            }
+            if ($vippsQuote->getReservedOrderId() !== $quote->getReservedOrderId()) {
+                $vippsQuote->setReservedOrderId($quote->getReservedOrderId());
+                $this->quoteRepository->save($vippsQuote);
+            }
         }
 
         return [];

@@ -59,9 +59,13 @@ class PaymentDetails extends DataObject
     /**
      * @return null|string
      */
-    public function getState()
+    public function getState(): ?string
     {
-        return strtolower($this->getData(self::STATE));
+        $state = $this->getData(self::STATE);
+        if (is_string($state)) {
+            return strtolower($state);
+        }
+        return null;
     }
 
     /**

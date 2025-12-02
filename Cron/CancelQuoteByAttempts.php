@@ -178,7 +178,7 @@ class CancelQuoteByAttempts
                 $this->cancelFacade->cancel($vippsQuote);
             }
         } catch (\Throwable $t) {
-            $this->logger->critical($t->getMessage(), ['vipps_quote_id' => $vippsQuote->getId()]);
+            $this->logger->critical($t->getMessage(), ['vipps_quote_id' => $vippsQuote->getId(), 'e' => $t]);;
         }
     }
 

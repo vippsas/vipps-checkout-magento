@@ -59,7 +59,6 @@ class SessionManager
 
     public function initSession(Quote $quote): InitSession
     {
-        $quote->removeAllAddresses();
         $quote->getExtensionAttributes()->setShippingAssignments(null);
         $this->cartRepository->save($quote);
 

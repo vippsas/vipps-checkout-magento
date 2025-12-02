@@ -53,6 +53,43 @@
                                         </item>
                                     </item>
                                 </item>
+                                <item name="sidebar" xsi:type="array">
+                                    <item name="children" xsi:type="array">
+                                        <item name="summary" xsi:type="array">
+                                            <item name="children" xsi:type="array">
+
+                                                <item name="totals" xsi:type="array"/>
+
+                                                <item name="discount" xsi:type="array">
+                                                    <item name="component" xsi:type="string">
+                                                        Vipps_Checkout/js/view/payment/discount
+                                                    </item>
+                                                    <item name="displayArea" xsi:type="string">summary</item>
+                                                    <item name="sortOrder" xsi:type="string">20</item>
+                                                    <item name="children" xsi:type="array">
+                                                        <item name="errors" xsi:type="array">
+                                                            <item name="component" xsi:type="string">
+                                                                Magento_SalesRule/js/view/payment/discount-messages
+                                                            </item>
+                                                            <item name="displayArea" xsi:type="string">messages</item>
+                                                            <item name="sortOrder" xsi:type="string">0</item>
+                                                        </item>
+                                                        <item name="captcha" xsi:type="array">
+                                                            <item name="component" xsi:type="string">
+                                                                Magento_SalesRule/js/view/payment/captcha
+                                                            </item>
+                                                            <item name="displayArea" xsi:type="string">captcha</item>
+                                                            <item name="formId" xsi:type="string">
+                                                                sales_rule_coupon_request
+                                                            </item>
+                                                            <item name="sortOrder" xsi:type="string">1</item>
+                                                        </item>
+                                                    </item>
+                                                </item>
+                                            </item>
+                                        </item>
+                                    </item>
+                                </item>
                             </item>
                         </item>
                     </item>

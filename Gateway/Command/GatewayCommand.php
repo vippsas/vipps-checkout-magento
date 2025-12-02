@@ -15,6 +15,7 @@
  */
 namespace Vipps\Checkout\Gateway\Command;
 
+use Exception;
 use Laminas\Http\Response;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Json\DecoderInterface;
@@ -97,9 +98,9 @@ class GatewayCommand implements CommandInterface
         ClientInterface $client,
         LoggerInterface $logger,
         DecoderInterface $jsonDecoder,
-        ProfilerInterface $profiler = null,
-        HandlerInterface $handler = null,
-        ValidatorInterface $validator = null
+        ?ProfilerInterface $profiler = null,
+        ?HandlerInterface $handler = null,
+        ?ValidatorInterface $validator = null
     ) {
         $this->requestBuilder = $requestBuilder;
         $this->transferFactory = $transferFactory;
@@ -135,7 +136,11 @@ class GatewayCommand implements CommandInterface
         $response = $result['response'];
         try {
             $responseBody = $this->jsonDecoder->decode($response->getContent());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
+            $this->logger->critical('JSON decode failed: ' . $e->getMessage(), [
+                'exception' => $e,
+                'raw_response' => $response->getContent(),
+            ]);
             $responseBody = [];
         }
 
@@ -152,8 +157,19 @@ class GatewayCommand implements CommandInterface
                 $errorCode,
                 $errorMessage
             );
-            $this->logger->critical($message);
-            throw new \Exception($errorMessage, $errorCode);
+
+            $this->logger->critical($message, [
+                'vipps_quote_id' => $commandSubject['vipps_quote_id'] ?? null,
+                'error_code' => $errorCode,
+                'error_message' => $errorMessage,
+                'request_payload' => $transfer->getBody() ?? null,
+                'response_body' => $responseBody,
+                'status_code' => $response->getStatusCode(),
+                'raw_response' => $response->getContent(),
+                'trace' => (new Exception())->getTraceAsString(),
+            ]);
+
+            throw new LocalizedException(__($errorMessage));
         }
 
         /** Validating Success response body by specific command validators */
@@ -182,7 +198,7 @@ class GatewayCommand implements CommandInterface
      *
      * @return void
      */
-    private function logValidationFails(array $fails)
+    private function logValidationFails(array $fails): void
     {
         foreach ($fails as $failPhrase) {
             $this->logger->critical((string) $failPhrase);
@@ -196,11 +212,11 @@ class GatewayCommand implements CommandInterface
      *
      * @return array
      */
-    private function extractError($responseBody)
+    private function extractError($responseBody): array
     {
         return [
-            'code' => isset($responseBody[0]['errorCode']) ? $responseBody[0]['errorCode'] : null,
-            'message' => isset($responseBody[0]['errorMessage']) ? $responseBody[0]['errorMessage'] : null,
+            'code' => $responseBody[0]['errorCode'] ?? null,
+            'message' => $responseBody[0]['errorMessage'] ?? null,
         ];
     }
 }

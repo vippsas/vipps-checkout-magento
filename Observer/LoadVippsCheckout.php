@@ -66,7 +66,7 @@ class LoadVippsCheckout implements ObserverInterface
     public function execute(Observer $observer)
     {
         if ($this->config->getValue('checkout_active')) {
-            $this->redirect->redirect($observer->getControllerAction()->getResponse(), 'checkout/vipps');
+            $this->redirect->redirect($observer->getControllerAction()->getResponse(), 'checkout/vipps/session');
         }
     }
 }

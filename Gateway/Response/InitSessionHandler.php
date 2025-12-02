@@ -27,6 +27,7 @@ use Vipps\Checkout\Api\Data\QuoteInterface;
 use Vipps\Checkout\Gateway\Request\SubjectReader;
 use Vipps\Checkout\Model\QuoteFactory;
 use Vipps\Checkout\Model\QuoteRepository;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class InitSessionHandler
@@ -55,6 +56,12 @@ class InitSessionHandler implements HandlerInterface
     private $cartRepository;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+
+    /**
      * InitiateHandler constructor.
      *
      * @param SubjectReader $subjectReader
@@ -66,12 +73,15 @@ class InitSessionHandler implements HandlerInterface
         SubjectReader $subjectReader,
         QuoteFactory $quoteFactory,
         QuoteRepository $quoteRepository,
-        CartRepositoryInterface $cartRepository
+        CartRepositoryInterface $cartRepository,
+        LoggerInterface $logger
+
     ) {
         $this->subjectReader = $subjectReader;
         $this->quoteFactory = $quoteFactory;
         $this->quoteRepository = $quoteRepository;
         $this->cartRepository = $cartRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -92,10 +102,30 @@ class InitSessionHandler implements HandlerInterface
         $payment = $paymentDO->getPayment();
         /** @var Quote $quote */
         $quote = $payment->getQuote();
+        $this->logger->info(
+            '[InitSessionHandler] Before save magento quote',
+            [
+                'quote_id' => $quote->getId(),
+                'reserved_order_id' => $quote->getReservedOrderId(),
+            ]
+        );
         $this->cartRepository->save($quote);
 
         try {
+            $this->logger->info(
+                '[InitSessionHandler] Before load vipps quote',
+                [
+                    'quote_id' => $quote->getId(),
+                    'reserved_order_id' => $quote->getReservedOrderId(),
+                ]
+            );
             $vippsQuote = $this->quoteRepository->loadNewByQuote($quote->getId());
+
+            $this->logger->info(
+                '[InitSessionHandler] After load vipps quote',
+                ['vipps_quote' => $vippsQuote->getData()],
+            );
+
         } catch (NoSuchEntityException $e) {
             /** @var QuoteInterface $vippsQuote */
             $vippsQuote = $this->quoteFactory->create();
@@ -108,6 +138,12 @@ class InitSessionHandler implements HandlerInterface
         $vippsQuote->setAuthToken($transfer->getBody()['merchantInfo']['callbackAuthorizationToken'] ?? null);
         $vippsQuote->setCheckoutToken($responseBody['token']);
         $vippsQuote->setCheckoutSessionId($this->extractSessionId($responseBody));
+
+
+        $this->logger->info(
+            '[InitSessionHandler] Before save vipps quote',
+            ['vipps_quote' => $vippsQuote->getData()],
+        );
 
         $this->quoteRepository->save($vippsQuote);
     }

@@ -133,6 +133,9 @@ class Logistics implements ActionInterface, CsrfAwareActionInterface
      */
     public function execute()
     {
+        $this->logger->debug(
+            "Incoming logistics request, with content", ['data' => $this->request->getContent()]
+        );
         $result = $this->resultFactory->create(ResultFactory::TYPE_JSON);
         try {
             $this->authorize();
@@ -142,18 +145,25 @@ class Logistics implements ActionInterface, CsrfAwareActionInterface
             $quote = $this->getQuote();
             $shippingMethods = $this->getShippingMethods($requestData, $quote);
 
+            $this->logger->debug(
+                "ShippingMethods return within logistic execute", [
+                    'shippingMethods' => $shippingMethods,
+                    'quote' => $quote->getData(),
+                ]
+            );
+
             $responseData = $this->prepareResponseData($shippingMethods, $quote);
             $result->setHttpResponseCode(Response::STATUS_CODE_200);
             $result->setData($responseData);
         } catch (LocalizedException $e) {
-            $this->logger->critical($e->getMessage());
+            $this->logger->critical($e->getMessage(), ['exception' => $e, 'trace' => $e->getTraceAsString()]);
             $result->setHttpResponseCode(Response::STATUS_CODE_500);
             $result->setData([
                 'status' => Response::STATUS_CODE_500,
                 'message' => $e->getMessage()
             ]);
         } catch (\Exception $e) {
-            $this->logger->critical($e->getMessage());
+            $this->logger->critical($e->getMessage(), ['exception' => $e, 'trace' => $e->getTraceAsString()]);
             $result->setHttpResponseCode(Response::STATUS_CODE_500);
             $result->setData([
                 'status' => Response::STATUS_CODE_500,
@@ -237,9 +247,33 @@ class Logistics implements ActionInterface, CsrfAwareActionInterface
         foreach ($shippingMethods as $key => $shippingMethod) {
             $methodFullCode = $shippingMethod->getCarrierCode() . '_' . $shippingMethod->getMethodCode();
 
+            $title = $shippingMethod->getCarrierTitle();
+            $description = (string) $shippingMethod->getMethodTitle();
+            // removing duplicate title from description, in case it's there
+            $description = str_replace($title, '', $description);
+
+            $extensionAttributes = $shippingMethod->getExtensionAttributes();
+            $pickupPointName = $extensionAttributes->getPickupPointName();
+            if ($pickupPointName) {
+                $description = $pickupPointName . ' - ' . $extensionAttributes->getPickupPointAddress();
+            }
+            $carrierCode = $shippingMethod->getCarrierCode();
+            $deliveryType = $this->getDeliveryType((string)$shippingMethod->getMethodCode());
+
+            // Check if Bring/Posten based on bring api logo url
+            $logo = null;
+            if ($extensionAttributes->getLogoUrl()) {
+                if (str_contains($extensionAttributes->getLogoUrl(), 'Bring')) {
+                    $logo = 'BRING';
+                }
+                if (str_contains($extensionAttributes->getLogoUrl(), 'Posten')) {
+                    $logo = 'POSTEN';
+                }
+            }
+
             $responseData[] = [
-                'brand' => $this->getBrand($shippingMethod->getCarrierCode()),
-                'type' => $this->getDeliveryType((string)$shippingMethod->getMethodCode()),
+                'brand' => $logo ?? $this->getBrand($carrierCode),
+                'type' => $deliveryType,
                 'amount' => [
                     'currency' => $quote->getStoreCurrencyCode(),
                     'value' => $shippingMethod->getAmount() * 100
@@ -247,8 +281,8 @@ class Logistics implements ActionInterface, CsrfAwareActionInterface
                 'id' => $methodFullCode,
                 'priority' => $key,
                 'isDefault' => false,
-                'title' => $shippingMethod->getCarrierTitle(),
-                'description' => $shippingMethod->getCarrierTitle() . ' ' . $shippingMethod->getMethodTitle()
+                'title' => $title,
+                'description' => $description
             ];
         }
 
@@ -264,6 +298,12 @@ class Logistics implements ActionInterface, CsrfAwareActionInterface
      */
     public function getBrand(string $carrierCode): string
     {
+        $supportedBrands = MethodMappingInterface::CARRIER_CODE;
+        foreach ($supportedBrands as $code => $label) {
+            if (str_contains($carrierCode, $code)) {
+                return $label;
+            }
+        }
         if (array_key_exists($carrierCode, MethodMappingInterface::CARRIER_CODE)) {
             return MethodMappingInterface::CARRIER_CODE[$carrierCode];
         }
