@@ -234,7 +234,13 @@ class UpdateTotals implements ActionInterface, CsrfAwareActionInterface
                     ];
 
                     if ($shippingMethodBody[$counter]['brand'] === 'POSTEN') {
-                        if (str_contains($shippingMethod->getExtensionAttributes()->getLogoUrl(), 'Bring')) {
+                        if (method_exists(
+                                $shippingMethod->getExtensionAttributes(),
+                                'getLogoUrl'
+                            ) && $shippingMethod->getExtensionAttributes()->getLogoUrl() && str_contains(
+                                $shippingMethod->getExtensionAttributes()->getLogoUrl(),
+                                'Bring'
+                            )) {
                             $shippingMethodBody[$counter]['brand'] = 'BRING';
                         }
                     }
