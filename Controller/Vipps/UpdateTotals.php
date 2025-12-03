@@ -165,7 +165,7 @@ class UpdateTotals implements ActionInterface, CsrfAwareActionInterface
         if ($forceUpdate || $currentTotal !== $vippsTotal) {
             if ($data['shippingId']) {
                 $this->updateVippsSession($quote, $data['shippingId']);
-            } else {
+            } elseif ($quote->getShippingAddress()->getCustomerEmail()) {
                 $this->updateVippsSession($quote);
             }
         }
