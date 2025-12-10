@@ -76,7 +76,6 @@
                     <include path="Vipps_Checkout::system/checkout.xml"/>
                     <include path="Vipps_Checkout::system/cancellation.xml"/>
                     <include path="Vipps_Checkout::system/partial_void.xml"/>
-                    <include path="Vipps_Checkout::system/display.xml"/>
                 </group>
             </group>
         </section>
