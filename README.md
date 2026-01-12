@@ -1,8 +1,3 @@
----
-# Facet metadata
-section: Plugins
----
-
 <!-- START_METADATA
 ---
 title: Vipps Checkout Module for Adobe Commerce / Magento
@@ -10,6 +5,7 @@ sidebar_position: 1
 description: Checkout Module for Adobe Commerce allows customers to choose Vipps, VISA or MasterCard as a payment method directly in the checkout.
 pagination_next: null
 pagination_prev: null
+section: Plugins
 ---
 END_METADATA -->
 
