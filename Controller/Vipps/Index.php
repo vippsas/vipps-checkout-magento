@@ -15,22 +15,18 @@
  */
 namespace Vipps\Checkout\Controller\Vipps;
 
-use Laminas\Http\Request;
-use Laminas\Http\Response;
 use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Customer\Api\AccountManagementInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
-use Magento\Framework\HTTP\Adapter\Curl as MagentoCurl;
-use Magento\Framework\HTTP\Adapter\CurlFactory;
 use Magento\Framework\Serialize\Serializer\Json;
-use Vipps\Checkout\Gateway\Config\Config;
-use Vipps\Checkout\Gateway\Http\Client\ClientInterface;
-use Vipps\Checkout\Model\ModuleMetadataInterface;
 use Vipps\Checkout\Model\QuoteRepository as VippsQuoteRepository;
 use Vipps\Checkout\Model\SessionManager;
-use Vipps\Checkout\Model\UrlResolver;
+use Vipps\Checkout\Gateway\Http\TransferFactory;
+use Vipps\Checkout\Gateway\Http\TransferInterface;
+use Vipps\Checkout\Gateway\Http\Client\CheckoutCurl;
+use Psr\Log\LoggerInterface;
 
 class Index extends \Magento\Checkout\Controller\Index\Index
 {
@@ -51,29 +47,24 @@ class Index extends \Magento\Checkout\Controller\Index\Index
     protected SessionManager $sessionManager;
 
     /**
-     * @var \Magento\Framework\HTTP\Adapter\CurlFactory
-     */
-    protected CurlFactory $adapterFactory;
-
-    /**
-     * @var UrlResolver
-     */
-    private UrlResolver $urlResolver;
-
-    /**
      * @var Json
      */
     private Json $serializer;
 
     /**
-     * @var ModuleMetadataInterface
+     * @var TransferFactory
      */
-    private ModuleMetadataInterface $moduleMetadata;
+    private TransferFactory $transferFactory;
 
     /**
-     * @var Config
+     * @var CheckoutCurl
      */
-    private Config $config;
+    private CheckoutCurl $checkoutCurl;
+
+    /**
+     * @var LoggerInterface
+     */
+    protected LoggerInterface $logger;
 
     /**
      * Index constructor.
@@ -95,11 +86,10 @@ class Index extends \Magento\Checkout\Controller\Index\Index
      * @param \Magento\Framework\View\Result\LayoutFactory $resultLayoutFactory
      * @param \Magento\Framework\Controller\Result\RawFactory $resultRawFactory
      * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
-     * @param \Magento\Framework\HTTP\Adapter\CurlFactory $adapterFactory
-     * @param UrlResolver $urlResolver
      * @param Json $serializer
-     * @param ModuleMetadataInterface $moduleMetadata
-     * @param Config $config
+     * @param TransferFactory $transferFactory
+     * @param CheckoutCurl $checkoutCurl
+     * @param LoggerInterface $logger
      */
     public function __construct(
         CheckoutSession $checkoutSession,
@@ -119,11 +109,10 @@ class Index extends \Magento\Checkout\Controller\Index\Index
         \Magento\Framework\View\Result\LayoutFactory $resultLayoutFactory,
         \Magento\Framework\Controller\Result\RawFactory $resultRawFactory,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
-        CurlFactory $adapterFactory,
-        UrlResolver $urlResolver,
         Json $serializer,
-        ModuleMetadataInterface $moduleMetadata,
-        Config $config,
+        TransferFactory $transferFactory,
+        CheckoutCurl $checkoutCurl,
+        LoggerInterface $logger
     ) {
         parent::__construct(
             $context,
@@ -144,11 +133,10 @@ class Index extends \Magento\Checkout\Controller\Index\Index
         $this->checkoutSession = $checkoutSession;
         $this->vippsQuoteRepository = $vippsQuoteRepository;
         $this->sessionManager = $sessionManager;
-        $this->adapterFactory = $adapterFactory;
-        $this->urlResolver = $urlResolver;
         $this->serializer = $serializer;
-        $this->moduleMetadata = $moduleMetadata;
-        $this->config = $config;
+        $this->transferFactory = $transferFactory;
+        $this->checkoutCurl = $checkoutCurl;
+        $this->logger = $logger;
     }
 
     public function execute()
@@ -162,9 +150,20 @@ class Index extends \Magento\Checkout\Controller\Index\Index
         if ($this->checkoutSession->getQuoteId()) {
             try {
                 $currentVippsData = $this->vippsQuoteRepository->loadNewByQuote($this->checkoutSession->getQuoteId());
-                $vippsSession = $this->getSession($currentVippsData->getCheckoutSessionId());
-            } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
-                // No Vipps data found for the current quote
+
+                $sessionId = $currentVippsData->getCheckoutSessionId();
+                /** @var TransferInterface $transfer */
+                $transfer = $this->transferFactory->create([
+                    'reference' => $sessionId
+                ]);
+
+                $vippsResponse = $this->checkoutCurl->placeRequest($transfer);
+                $vippsSession = $this->serializer->unserialize($vippsResponse['response']->getContent());
+            } catch (\Exception $e) {
+                $this->logger->error(
+                    'Vipps checkout session fetch failed',
+                    ['exception' => $e]
+                );
             }
         }
 
@@ -202,7 +201,7 @@ class Index extends \Magento\Checkout\Controller\Index\Index
         }
 
         if (isset($vippsSession['sessionState']) && ($vippsSession['sessionState'] === 'PaymentTerminated' ||
-            $vippsSession['sessionState'] === 'SessionExpired')) {
+                                                     $vippsSession['sessionState'] === 'SessionExpired')) {
             $sessionTerminated = true;
         }
 
@@ -224,62 +223,5 @@ class Index extends \Magento\Checkout\Controller\Index\Index
         $resultPage->getConfig()->getTitle()->set(__('Checkout'));
 
         return $resultPage;
-    }
-
-    private function getSession($sessionId)
-    {
-
-        $headers = [
-            'Content-Type' => 'application/json',
-            'Idempotency-Key' => uniqid('req-id-', true),
-            'X-Source-Address' => '',
-            'X-TimeStamp' => '',
-            'Merchant-Serial-Number' => $this->config->getValue('merchant_serial_number'),
-            'Client_Id' => $this->config->getValue('client_id'),
-            'Client_Secret' => $this->config->getValue('client_secret'),
-            'Ocp-Apim-Subscription-Key' => $this->config->getValue('subscription_key1'),
-        ];
-
-        $headers = $this->moduleMetadata->addOptionalHeaders($headers);
-
-        $result = [];
-        foreach ($headers as $key => $value) {
-            $result[] = sprintf('%s: %s', $key, $value);
-        }
-        $headers = $result;
-
-        $transfer = [
-            'method' => Request::METHOD_GET,
-            'uri' => $this->urlResolver->getUrl('/checkout/v3/session/')  . $sessionId,
-            'body' => [
-                'reference' => $sessionId,
-            ]
-        ];
-
-        try {
-            $adapter = null;
-            /** @var MagentoCurl $adapter */
-            $adapter = $this->adapterFactory->create();
-            $options = [
-                CURLOPT_TIMEOUT => 30,
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_POSTFIELDS => $this->serializer->serialize($transfer['body'])
-            ];
-            $adapter->setOptions($options);
-
-            $adapter->write(
-                $transfer['method'],
-                $transfer['uri'],
-                '1.1',
-                $headers,
-                $this->serializer->serialize($transfer['body'])
-            );
-
-            $response = $adapter->read();
-
-            return $this->serializer->unserialize(Response::fromString($response)->getContent());
-        } finally {
-            $adapter ? $adapter->close() : null;
-        }
     }
 }

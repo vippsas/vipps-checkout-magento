@@ -594,4 +594,10 @@
             <argument name="type" xsi:type="const">Vipps\Checkout\Model\Profiling\TypeInterface::SEND_RECEIPT</argument>
         </arguments>
     </virtualType>
+
+    <type name="Vipps\Checkout\Controller\Vipps\Index">
+        <arguments>
+            <argument name="transferFactory" xsi:type="object">VippsCheckoutGetSessionTransferFty</argument>
+        </arguments>
+    </type>
 </config>
