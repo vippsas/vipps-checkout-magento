@@ -600,4 +600,24 @@
             <argument name="transferFactory" xsi:type="object">VippsCheckoutGetSessionTransferFty</argument>
         </arguments>
     </type>
+
+    <virtualType name="VippsCheckoutUpdateSessionTransferFty" type="Vipps\Checkout\Gateway\Http\TransferFactory">
+        <arguments>
+            <argument name="method" xsi:type="string">PATCH</argument>
+            <argument name="endpointUrl" xsi:type="string">/checkout/v3/session/:reference</argument>
+            <argument name="urlParams" xsi:type="array">
+                <item name="reference" xsi:type="string">reference</item>
+            </argument>
+            <argument name="allowedBodyKeys" xsi:type="array">
+                <item name="transaction" xsi:type="string">transaction</item>
+                <item name="logisticOptions" xsi:type="string">logisticOptions</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Vipps\Checkout\Controller\Vipps\UpdateTotals">
+        <arguments>
+            <argument name="transferFactory" xsi:type="object">VippsCheckoutUpdateSessionTransferFty</argument>
+        </arguments>
+    </type>
 </config>

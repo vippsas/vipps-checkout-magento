@@ -120,6 +120,13 @@ class CheckoutCurl implements ClientInterface
                     CURLOPT_POSTFIELDS => $this->jsonEncoder->encode($requestBody)
                 ];
             }
+            if ($transfer->getMethod() === Request::METHOD_PATCH) {
+                $options += [
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_CUSTOMREQUEST => Request::METHOD_PATCH,
+                    CURLOPT_POSTFIELDS => $this->jsonEncoder->encode($requestBody)
+                ];
+            }
             $adapter->setOptions($options);
             $headers = $this->getHeaders($transfer->getHeaders());
             // send request
