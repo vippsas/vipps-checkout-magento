@@ -19,7 +19,6 @@ The format is based on Keep a Changelog and this project adheres to Semantic Ver
 - Functionality to reuse current session and renew functionality for iframe
 - Create session if doesn't exist for order cancel
 - New session generation via `vipps/checkout/session`
-- Add discount to checkout summary, add ability to toggle discount display in checkout summary
 - New Update totals logic (update vipps total when magento total is changed, recalculate shipping methods)
 
 ### Changed

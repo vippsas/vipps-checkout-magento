@@ -34,62 +34,17 @@ use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Model\MaskedQuoteIdToQuoteIdInterface;
 use Magento\Quote\Model\Quote;
 use Psr\Log\LoggerInterface;
-use Vipps\Checkout\Gateway\Config\Config;
-use Vipps\Checkout\Gateway\Http\Client\ClientInterface;
 use Vipps\Checkout\Model\Exception\AcquireLockException;
 use Vipps\Checkout\Model\LockManager;
-use Vipps\Checkout\Model\ModuleMetadataInterface;
 use Vipps\Checkout\Model\QuoteRepository as VippsQuoteRepository;
 use Vipps\Checkout\Model\SessionManager;
-use Vipps\Checkout\Model\UrlResolver;
 use Magento\Quote\Api\ShippingMethodManagementInterface;
+use Vipps\Checkout\Gateway\Http\TransferFactory;
+use Vipps\Checkout\Gateway\Http\TransferInterface;
+use Vipps\Checkout\Gateway\Http\Client\CheckoutCurl;
 
 class UpdateTotals implements ActionInterface, CsrfAwareActionInterface
 {
-    /**
-     * @var string
-     */
-    const HEADER_PARAM_CONTENT_TYPE = 'Content-Type';
-
-    /**
-     * @var string
-     */
-    const HEADER_PARAM_AUTHORIZATION = 'Authorization';
-
-    /**
-     * @var string
-     */
-    const HEADER_PARAM_IDEMPOTENCY_KEY = 'Idempotency-Key';
-
-    /**
-     * @var string
-     */
-    const HEADER_PARAM_X_SOURCE_ADDRESS = 'X-Source-Address';
-
-    /**
-     * @var string
-     */
-    const HEADER_PARAM_X_TIMESTAMP = 'X-TimeStamp';
-
-    /**
-     * @var string
-     */
-    const HEADER_PARAM_SUBSCRIPTION_KEY = 'Ocp-Apim-Subscription-Key';
-
-    /**
-     * @var string
-     */
-    const HEADER_PARAM_CLIENT_ID = 'Client_Id';
-
-    /**
-     * @var string
-     */
-    const HEADER_PARAM_CLIENT_SECRET = 'Client_Secret';
-
-    /**
-     * @var string
-     */
-    const HEADER_PARAM_MERCHANT_SERIAL_NUMBER = 'Merchant-Serial-Number';
     private ResultFactory $resultFactory;
     private RequestInterface $request;
     private Json $serializer;
@@ -97,22 +52,17 @@ class UpdateTotals implements ActionInterface, CsrfAwareActionInterface
     private CartRepositoryInterface $cartRepository;
     private LoggerInterface $logger;
     private Context $context;
-
-    private Config $config;
-
-    private CurlFactory $adapterFactory;
-
-    private ModuleMetadataInterface $moduleMetadata;
-
     private VippsQuoteRepository $vippsQuoteRepository;
 
     private SessionManager $sessionManager;
 
-    private UrlResolver $urlResolver;
-
     private LockManager $lockManager;
 
     private ShippingMethodManagementInterface $shippingMethodManagement;
+
+    private TransferFactory $transferFactory;
+
+    private CheckoutCurl $checkoutCurl;
 
     public function __construct(
         ResultFactory $resultFactory,
@@ -122,14 +72,12 @@ class UpdateTotals implements ActionInterface, CsrfAwareActionInterface
         CartRepositoryInterface $cartRepository,
         LoggerInterface $logger,
         Context $context,
-        Config $config,
-        CurlFactory $adapterFactory,
-        ModuleMetadataInterface $moduleMetadata,
         VippsQuoteRepository $vippsQuoteRepository,
         SessionManager $sessionManager,
-        UrlResolver $urlResolver,
         LockManager $lockManager,
-        ShippingMethodManagementInterface $shippingMethodManagement
+        ShippingMethodManagementInterface $shippingMethodManagement,
+        TransferFactory $transferFactory,
+        CheckoutCurl $checkoutCurl,
 
     ) {
         $this->resultFactory = $resultFactory;
@@ -139,14 +87,12 @@ class UpdateTotals implements ActionInterface, CsrfAwareActionInterface
         $this->cartRepository = $cartRepository;
         $this->logger = $logger;
         $this->context = $context;
-        $this->config = $config;
-        $this->adapterFactory = $adapterFactory;
-        $this->moduleMetadata = $moduleMetadata;
         $this->vippsQuoteRepository = $vippsQuoteRepository;
         $this->sessionManager = $sessionManager;
-        $this->urlResolver = $urlResolver;
         $this->lockManager = $lockManager;
         $this->shippingMethodManagement = $shippingMethodManagement;
+        $this->transferFactory = $transferFactory;
+        $this->checkoutCurl = $checkoutCurl;
     }
 
     public function execute()
@@ -165,7 +111,7 @@ class UpdateTotals implements ActionInterface, CsrfAwareActionInterface
         if ($forceUpdate || $currentTotal !== $vippsTotal) {
             if ($data['shippingId']) {
                 $this->updateVippsSession($quote, $data['shippingId']);
-            } elseif ($quote->getShippingAddress()->getCustomerEmail()) {
+            } else {
                 $this->updateVippsSession($quote);
             }
         }
@@ -249,85 +195,32 @@ class UpdateTotals implements ActionInterface, CsrfAwareActionInterface
             }
         }
 
-        $transfer = [
-            'method' => Request::METHOD_PATCH,
-            'uri' => $this->urlResolver->getUrl('/checkout/v3/session/')  . $quote->getReservedOrderId(),
-            'headers' => [
-                ClientInterface::HEADER_PARAM_IDEMPOTENCY_KEY => uniqid('req-id-', true)
-            ],
-            'body' => [
-                'transaction' => [
-                    'amount' => [
-                        'currency' => $quote->getStoreCurrencyCode(),
-                        'value' => ($quote->getGrandTotal() - $quote->getShippingAddress()->getShippingInclTax() ?? 0) * 100
-                    ],
-                    'paymentDescription' => 'Order Id'
+        $transferRequest = [
+            'reference' => $quote->getReservedOrderId(),
+            'transaction' => [
+                'amount' => [
+                    'currency' => $quote->getStoreCurrencyCode(),
+                    'value' => ($quote->getGrandTotal() - $quote->getShippingAddress()->getShippingInclTax() ?? 0) * 100
                 ],
+                'paymentDescription' => 'Order Id: ' . $quote->getReservedOrderId()
             ]
         ];
 
         if ($shippingMethods) {
-            $transfer['body']['logisticOptions'] = $shippingMethodBody;
+            $transferRequest['logisticOptions'] = $shippingMethodBody;
         }
+
+        /** @var TransferInterface $transfer */
+        $transfer = $this->transferFactory->create($transferRequest);
 
         try {
             $lockName = $this->acquireLock($quote->getReservedOrderId());
-
-            $adapter = null;
-            /** @var MagentoCurl $adapter */
-            $adapter = $this->adapterFactory->create();
-            $options = [
-                CURLOPT_TIMEOUT => 30,
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_CUSTOMREQUEST => Request::METHOD_PATCH,
-                CURLOPT_POSTFIELDS => $this->serializer->serialize($transfer['body'])
-            ];
-            $adapter->setOptions($options);
-            $headers = $this->getHeaders($transfer['headers']);
-
-            $adapter->write(
-                $transfer['method'],
-                $transfer['uri'],
-                '1.1',
-                $headers,
-                $this->serializer->serialize($transfer['body'])
-            );
-
-            $response = $adapter->read();
-
-            return Response::fromString($response);
+            return $this->checkoutCurl->placeRequest($transfer);
         } finally {
-            $adapter ? $adapter->close() : null;
             if (isset($lockName)) {
                 $this->releaseLock($lockName);
             }
         }
-    }
-
-    private function getHeaders($headers)
-    {
-        $headers = array_merge(
-            [
-                self::HEADER_PARAM_CONTENT_TYPE => 'application/json',
-                self::HEADER_PARAM_IDEMPOTENCY_KEY => '',
-                self::HEADER_PARAM_X_SOURCE_ADDRESS => '',
-                self::HEADER_PARAM_X_TIMESTAMP => '',
-                self::HEADER_PARAM_MERCHANT_SERIAL_NUMBER => $this->config->getValue('merchant_serial_number'),
-                self::HEADER_PARAM_CLIENT_ID => $this->config->getValue('client_id'),
-                self::HEADER_PARAM_CLIENT_SECRET => $this->config->getValue('client_secret'),
-                self::HEADER_PARAM_SUBSCRIPTION_KEY => $this->config->getValue('subscription_key1'),
-            ],
-            $headers
-        );
-
-        $headers = $this->moduleMetadata->addOptionalHeaders($headers);
-
-        $result = [];
-        foreach ($headers as $key => $value) {
-            $result[] = sprintf('%s: %s', $key, $value);
-        }
-
-        return $result;
     }
 
     /**
