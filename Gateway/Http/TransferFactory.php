@@ -124,16 +124,7 @@ class TransferFactory implements TransferFactoryInterface
                 $endpointUrl = str_replace(':' . $paramValue, $request[$paramValue], $this->endpointUrl);
             }
         }
-        if (str_contains($endpointUrl, ':reference')) {
-            $this->logger->info(
-                'Failed to replace :reference',
-                [
-                    'backtrace' => debug_backtrace(),
-                    'url_params' => $this->urlParams,
-                    'request' => $request,
-                ],
-            );
-        }
+
         return $this->urlResolver->getUrl($endpointUrl);
     }
 

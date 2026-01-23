@@ -259,8 +259,6 @@ class Logistics implements ActionInterface, CsrfAwareActionInterface
             }
 
             $carrierCode = $shippingMethod->getCarrierCode();
-            $deliveryType = $this->getDeliveryType((string)$shippingMethod->getMethodCode());
-
             // Check if Bring/Posten based on bring api logo url
             $logo = null;
             if (method_exists($extensionAttributes, 'getLogoUrl') && $extensionAttributes->getLogoUrl() !== null) {
@@ -274,7 +272,7 @@ class Logistics implements ActionInterface, CsrfAwareActionInterface
 
             $responseData[] = [
                 'brand' => $logo ?? $this->getBrand($carrierCode),
-                'type' => $deliveryType,
+                'type' => $this->getDeliveryType((string)$shippingMethod->getMethodCode()),
                 'amount' => [
                     'currency' => $quote->getStoreCurrencyCode(),
                     'value' => $shippingMethod->getAmount() * 100

@@ -23,10 +23,8 @@ use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Framework\Serialize\Serializer\Json;
 use Vipps\Checkout\Model\QuoteRepository as VippsQuoteRepository;
 use Vipps\Checkout\Model\SessionManager;
-use Vipps\Checkout\Gateway\Http\TransferFactory;
-use Vipps\Checkout\Gateway\Http\TransferInterface;
-use Vipps\Checkout\Gateway\Http\Client\CheckoutCurl;
 use Psr\Log\LoggerInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 
 class Index extends \Magento\Checkout\Controller\Index\Index
 {
@@ -47,50 +45,10 @@ class Index extends \Magento\Checkout\Controller\Index\Index
     protected SessionManager $sessionManager;
 
     /**
-     * @var Json
-     */
-    private Json $serializer;
-
-    /**
-     * @var TransferFactory
-     */
-    private TransferFactory $transferFactory;
-
-    /**
-     * @var CheckoutCurl
-     */
-    private CheckoutCurl $checkoutCurl;
-
-    /**
      * @var LoggerInterface
      */
     protected LoggerInterface $logger;
 
-    /**
-     * Index constructor.
-     *
-     * @param CheckoutSession $checkoutSession
-     * @param VippsQuoteRepository $vippsQuoteRepository
-     * @param SessionManager $sessionManager
-     * @param \Magento\Framework\App\Action\Context $context
-     * @param \Magento\Customer\Model\Session $customerSession
-     * @param CustomerRepositoryInterface $customerRepository
-     * @param AccountManagementInterface $accountManagement
-     * @param \Magento\Framework\Registry $coreRegistry
-     * @param \Magento\Framework\Translate\InlineInterface $translateInline
-     * @param \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \Magento\Framework\View\LayoutFactory $layoutFactory
-     * @param \Magento\Quote\Api\CartRepositoryInterface $quoteRepository
-     * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
-     * @param \Magento\Framework\View\Result\LayoutFactory $resultLayoutFactory
-     * @param \Magento\Framework\Controller\Result\RawFactory $resultRawFactory
-     * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
-     * @param Json $serializer
-     * @param TransferFactory $transferFactory
-     * @param CheckoutCurl $checkoutCurl
-     * @param LoggerInterface $logger
-     */
     public function __construct(
         CheckoutSession $checkoutSession,
         VippsQuoteRepository $vippsQuoteRepository,
@@ -109,9 +67,6 @@ class Index extends \Magento\Checkout\Controller\Index\Index
         \Magento\Framework\View\Result\LayoutFactory $resultLayoutFactory,
         \Magento\Framework\Controller\Result\RawFactory $resultRawFactory,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
-        Json $serializer,
-        TransferFactory $transferFactory,
-        CheckoutCurl $checkoutCurl,
         LoggerInterface $logger
     ) {
         parent::__construct(
@@ -133,9 +88,6 @@ class Index extends \Magento\Checkout\Controller\Index\Index
         $this->checkoutSession = $checkoutSession;
         $this->vippsQuoteRepository = $vippsQuoteRepository;
         $this->sessionManager = $sessionManager;
-        $this->serializer = $serializer;
-        $this->transferFactory = $transferFactory;
-        $this->checkoutCurl = $checkoutCurl;
         $this->logger = $logger;
     }
 
@@ -145,67 +97,58 @@ class Index extends \Magento\Checkout\Controller\Index\Index
         if ($resultPage instanceof Redirect) {
             return $resultPage;
         }
+        $request = $this->getRequest();
 
-        $currentVippsData = null;
-        if ($this->checkoutSession->getQuoteId()) {
-            try {
-                $currentVippsData = $this->vippsQuoteRepository->loadNewByQuote($this->checkoutSession->getQuoteId());
+        if (!$this->checkoutSession->getQuoteId()) {
+            $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
+            $resultRedirect->setPath('checkout/cart');
 
-                $sessionId = $currentVippsData->getCheckoutSessionId();
-                /** @var TransferInterface $transfer */
-                $transfer = $this->transferFactory->create([
-                    'reference' => $sessionId
-                ]);
-
-                $vippsResponse = $this->checkoutCurl->placeRequest($transfer);
-                $vippsSession = $this->serializer->unserialize($vippsResponse['response']->getContent());
-            } catch (\Exception $e) {
-                $this->logger->error(
-                    'Vipps checkout session fetch failed',
-                    ['exception' => $e]
-                );
-            }
+            return $resultRedirect;
         }
 
-        if ($currentVippsData &&
-            $currentVippsData->getCheckoutToken() &&
-            $currentVippsData->getStatus() !== 'canceled' &&
-            $this->getRequest()->getParam('token') === null) {
-            $session = $this->sessionManager->getSession(
-                $currentVippsData->getCheckoutSessionId()
+        try {
+            $vippsCheckoutQuote = $this->vippsQuoteRepository->loadNewByQuote($this->checkoutSession->getQuoteId());
+        } catch (NoSuchEntityException) {
+            $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
+            $resultRedirect->setPath('checkout/vipps/session');
+
+            return $resultRedirect;
+        }
+
+        try {
+            $vippsSession = $this->sessionManager->getSession(
+                $vippsCheckoutQuote->getCheckoutSessionId()
             );
-            if (!$session->isSessionExpired() && !$session->isPaymentTerminated()) {
+        } catch (\Exception $e) {
+            $this->logger->error(
+                'Vipps checkout session fetch failed',
+                ['exception' => $e]
+            );
+        }
+
+        // if token is null and session not expired & not terminated, reuse token
+        if (
+            $vippsCheckoutQuote->getCheckoutToken() &&
+            $vippsCheckoutQuote->getStatus() !== 'canceled' &&
+            $request->getParam('token') === null &&
+            !$vippsSession->isSessionExpired() &&
+            !$vippsSession->isPaymentTerminated()
+        ) {
                 $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
                 $resultRedirect->setPath(
                     'checkout/vipps',
-                    ['_query' => ['token' => $currentVippsData->getCheckoutToken()]]
+                    ['_query' => ['token' => $vippsCheckoutQuote->getCheckoutToken()]]
                 );
 
                 return $resultRedirect;
-            }
         }
 
-        $request = $this->getRequest();
-
-        $sessionTerminated = false;
-        if ($currentVippsData &&
-            $currentVippsData->getCheckoutSessionId() &&
-            $currentVippsData->getStatus() !== 'canceled') {
-            $session = $this->sessionManager->getSession(
-                $currentVippsData->getCheckoutSessionId()
-            );
-
-            if ($session->isSessionExpired() || $session->isPaymentTerminated()) {
-                $sessionTerminated = true;
-            }
-        }
-
-        if (isset($vippsSession['sessionState']) && ($vippsSession['sessionState'] === 'PaymentTerminated' ||
-                                                     $vippsSession['sessionState'] === 'SessionExpired')) {
-            $sessionTerminated = true;
-        }
-
-        if ($request->getParam('token') === null || $sessionTerminated) {
+        // if token empty or session terminated, create new session
+        if (
+            $request->getParam('token') === null ||
+            $vippsSession->isPaymentTerminated() ||
+            $vippsSession->isSessionExpired()
+        ) {
             $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
             $resultRedirect->setPath('checkout/vipps/session');
 
