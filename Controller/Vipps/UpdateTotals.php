@@ -179,16 +179,14 @@ class UpdateTotals implements ActionInterface, CsrfAwareActionInterface
                         'brand' => (str_contains($shippingMethod->getCarrierCode(), 'bring')) ? 'POSTEN' : 'OTHER',
                     ];
 
-                    if ($shippingMethodBody[$counter]['brand'] === 'POSTEN') {
-                        if (method_exists(
-                                $shippingMethod->getExtensionAttributes(),
-                                'getLogoUrl'
-                            ) && $shippingMethod->getExtensionAttributes()->getLogoUrl() && str_contains(
-                                $shippingMethod->getExtensionAttributes()->getLogoUrl(),
-                                'Bring'
-                            )) {
-                            $shippingMethodBody[$counter]['brand'] = 'BRING';
-                        }
+                    // currently only way to accurately resolve brand
+                    if (
+                        $shippingMethodBody[$counter]['brand'] === 'POSTEN' &&
+                        method_exists($shippingMethod->getExtensionAttributes(), 'getLogoUrl') &&
+                        $shippingMethod->getExtensionAttributes()->getLogoUrl() &&
+                        str_contains($shippingMethod->getExtensionAttributes()->getLogoUrl(), 'Bring')
+                    ) {
+                        $shippingMethodBody[$counter]['brand'] = 'BRING';
                     }
                     $counter++;
                 }

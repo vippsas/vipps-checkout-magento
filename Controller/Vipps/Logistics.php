@@ -145,25 +145,18 @@ class Logistics implements ActionInterface, CsrfAwareActionInterface
             $quote = $this->getQuote();
             $shippingMethods = $this->getShippingMethods($requestData, $quote);
 
-            $this->logger->debug(
-                "ShippingMethods return within logistic execute", [
-                    'shippingMethods' => $shippingMethods,
-                    'quote' => $quote->getData(),
-                ]
-            );
-
             $responseData = $this->prepareResponseData($shippingMethods, $quote);
             $result->setHttpResponseCode(Response::STATUS_CODE_200);
             $result->setData($responseData);
         } catch (LocalizedException $e) {
-            $this->logger->critical($e->getMessage(), ['exception' => $e, 'trace' => $e->getTraceAsString()]);
+            $this->logger->critical($e->getMessage());
             $result->setHttpResponseCode(Response::STATUS_CODE_500);
             $result->setData([
                 'status' => Response::STATUS_CODE_500,
                 'message' => $e->getMessage()
             ]);
         } catch (\Exception $e) {
-            $this->logger->critical($e->getMessage(), ['exception' => $e, 'trace' => $e->getTraceAsString()]);
+            $this->logger->critical($e->getMessage());
             $result->setHttpResponseCode(Response::STATUS_CODE_500);
             $result->setData([
                 'status' => Response::STATUS_CODE_500,
@@ -253,15 +246,20 @@ class Logistics implements ActionInterface, CsrfAwareActionInterface
             $description = str_replace($title, '', $description);
 
             $extensionAttributes = $shippingMethod->getExtensionAttributes();
-            if (method_exists($extensionAttributes, 'getPickupPointName') && $extensionAttributes->getPickupPointName(
-                ) !== null) {
-                    $description = $extensionAttributes->getPickupPointName() . ' - ' . $extensionAttributes->getPickupPointAddress();
+            if (
+                method_exists($extensionAttributes, 'getPickupPointName') &&
+                $extensionAttributes->getPickupPointName() !== null
+            ) {
+                $description = $extensionAttributes->getPickupPointName() . ' - ' . $extensionAttributes->getPickupPointAddress();
             }
 
             $carrierCode = $shippingMethod->getCarrierCode();
             // Check if Bring/Posten based on bring api logo url
             $logo = null;
-            if (method_exists($extensionAttributes, 'getLogoUrl') && $extensionAttributes->getLogoUrl() !== null) {
+            if (
+                method_exists($extensionAttributes, 'getLogoUrl') &&
+                $extensionAttributes->getLogoUrl() !== null
+            ) {
                 if (str_contains($extensionAttributes->getLogoUrl(), 'Bring')) {
                     $logo = 'BRING';
                 }
