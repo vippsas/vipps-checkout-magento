@@ -242,16 +242,8 @@ class Logistics implements ActionInterface, CsrfAwareActionInterface
 
             $title = $shippingMethod->getCarrierTitle();
             $description = (string) $shippingMethod->getMethodTitle();
-            // removing duplicate title from description, in case it's there
-            $description = str_replace($title, '', $description);
 
             $extensionAttributes = $shippingMethod->getExtensionAttributes();
-            if (
-                method_exists($extensionAttributes, 'getPickupPointName') &&
-                $extensionAttributes->getPickupPointName() !== null
-            ) {
-                $description = $extensionAttributes->getPickupPointName() . ' - ' . $extensionAttributes->getPickupPointAddress();
-            }
 
             $carrierCode = $shippingMethod->getCarrierCode();
             // Check if Bring/Posten based on bring api logo url
