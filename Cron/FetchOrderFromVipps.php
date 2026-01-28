@@ -153,7 +153,7 @@ class FetchOrderFromVipps
 
             $this->sessionProcessor->process($vippsQuote);
         } catch (\Throwable $t) {
-            $this->logger->critical($t->getMessage(), ['vipps_quote_id' => $vippsQuote->getId(), 'e' => $t]);
+            $this->logger->critical($t->getMessage(), ['vipps_quote_id' => $vippsQuote->getId()]);
 
             $vippsQuote->incrementAttempt();
             $this->vippsQuoteRepository->save($vippsQuote);

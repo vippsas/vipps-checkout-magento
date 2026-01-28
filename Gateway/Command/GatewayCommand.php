@@ -137,10 +137,6 @@ class GatewayCommand implements CommandInterface
         try {
             $responseBody = $this->jsonDecoder->decode($response->getContent());
         } catch (Exception $e) {
-            $this->logger->critical('JSON decode failed: ' . $e->getMessage(), [
-                'exception' => $e,
-                'raw_response' => $response->getContent(),
-            ]);
             $responseBody = [];
         }
 
@@ -157,18 +153,7 @@ class GatewayCommand implements CommandInterface
                 $errorCode,
                 $errorMessage
             );
-
-            $this->logger->critical($message, [
-                'vipps_quote_id' => $commandSubject['vipps_quote_id'] ?? null,
-                'error_code' => $errorCode,
-                'error_message' => $errorMessage,
-                'request_payload' => $transfer->getBody() ?? null,
-                'response_body' => $responseBody,
-                'status_code' => $response->getStatusCode(),
-                'raw_response' => $response->getContent(),
-                'trace' => (new Exception())->getTraceAsString(),
-            ]);
-
+            $this->logger->critical($message);
             throw new LocalizedException(__($errorMessage));
         }
 
