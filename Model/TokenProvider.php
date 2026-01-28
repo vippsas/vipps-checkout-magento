@@ -25,7 +25,7 @@ use Magento\Framework\Serialize\Serializer\Json;
 use Vipps\Checkout\Api\TokenProviderInterface;
 use Vipps\Checkout\Gateway\Exception\AuthenticationException;
 use Vipps\Checkout\Gateway\Http\Client\ClientInterface;
-use Laminas\Http\Client;
+use Laminas\Http\ClientFactory;
 use Laminas\Http\Request;
 use Laminas\Http\Response;
 
@@ -42,6 +42,11 @@ class TokenProvider implements TokenProviderInterface
      * @var string
      */
     private static $endpointUrl = '/accessToken/get';
+
+    /**
+     * @var ClientFactory
+     */
+    private $httpClientFactory;
 
     /**
      * @var ResourceConnection
@@ -78,33 +83,33 @@ class TokenProvider implements TokenProviderInterface
      */
     private $jwtRecord = [];
 
-    private Client $httpClient;
-
     /**
+     * TokenProvider constructor.
+     *
      * @param ResourceConnection $resourceConnection
+     * @param ClientFactory $httpClientFactory
      * @param ConfigInterface $config
      * @param Json $serializer
      * @param LoggerInterface $logger
      * @param UrlResolver $urlResolver
      * @param ScopeResolverInterface $scopeResolver
-     * @param Client $httpClient
      */
     public function __construct(
         ResourceConnection $resourceConnection,
+        ClientFactory $httpClientFactory,
         ConfigInterface $config,
         Json $serializer,
         LoggerInterface $logger,
         UrlResolver $urlResolver,
-        ScopeResolverInterface $scopeResolver,
-        Client $httpClient
+        ScopeResolverInterface $scopeResolver
     ) {
         $this->resourceConnection = $resourceConnection;
+        $this->httpClientFactory = $httpClientFactory;
         $this->config = $config;
         $this->serializer = $serializer;
         $this->logger = $logger;
         $this->urlResolver = $urlResolver;
         $this->scopeResolver = $scopeResolver;
-        $this->httpClient = $httpClient;
     }
 
     /**
@@ -121,46 +126,6 @@ class TokenProvider implements TokenProviderInterface
             $this->regenerate();
         }
         return $this->jwtRecord['access_token'];
-    }
-
-    /**
-     * Method to load latest token record from storage.
-     *
-     * @return array
-     */
-    private function loadTokenRecord()
-    {
-        if (!$this->jwtRecord) {
-            $connection = $this->resourceConnection->getConnection();
-            $select = $connection->select(); //@codingStandardsIgnoreLine
-            $select->from($this->resourceConnection->getTableName('vipps_payment_jwt')) //@codingStandardsIgnoreLine
-                ->where('scope = ?', $this->getScopeType()) // @codingStandardsIgnoreLine
-                ->where('scope_id = ?', $this->getScopeId()) //@codingStandardsIgnoreLine
-                ->limit(1) //@codingStandardsIgnoreLine
-                ->order("token_id DESC"); //@codingStandardsIgnoreLine
-            $this->jwtRecord = $connection->fetchRow($select) ?: []; //@codingStandardsIgnoreLine
-        }
-        return $this->jwtRecord;
-    }
-
-    /**
-     * Return current scope type.
-     *
-     * @return string
-     */
-    private function getScopeType()
-    {
-        return $this->scopeResolver->getScope()->getScopeType();
-    }
-
-    /**
-     * Return current scope Id.
-     *
-     * @return int
-     */
-    private function getScopeId()
-    {
-        return $this->scopeResolver->getScope()->getId();
     }
 
     /**
@@ -202,14 +167,15 @@ class TokenProvider implements TokenProviderInterface
             'Content-Length' => 0
         ];
 
+        $client = $this->httpClientFactory->create();
         try {
-            $this->httpClient->setOptions(['strict' => false]);
-            $this->httpClient->setUri($this->urlResolver->getUrl(self::$endpointUrl));
-            $this->httpClient->setMethod(Request::METHOD_POST);
-            $this->httpClient->setHeaders($headers);
-            $this->httpClient->setRawBody('');
+            $client->setOptions(['strict' => false]);
+            $client->setUri($this->urlResolver->getUrl(self::$endpointUrl));
+            $client->setMethod(Request::METHOD_POST);
+            $client->setHeaders($headers);
+            $client->setRawBody('');
 
-            $response = $this->httpClient->send();
+            $response = $client->send();
             $jwt = $this->serializer->unserialize($response->getBody());
 
             if (!$response->isSuccess()) {
@@ -228,23 +194,23 @@ class TokenProvider implements TokenProviderInterface
     }
 
     /**
-     * Method to validate JWT token.
+     * Method to load latest token record from storage.
      *
-     * @param $jwt
-     *
-     * @return bool
+     * @return array
      */
-    private function isJwtValid($jwt): bool
+    private function loadTokenRecord()
     {
-        $requiredKeys = [
-            'token_type', 'expires_in', 'ext_expires_in', 'not_before', 'resource', 'access_token'
-        ];
-        foreach ($requiredKeys as $key) {
-            if (!array_key_exists($key, $jwt)) {
-                return false;
-            }
+        if (!$this->jwtRecord) {
+            $connection = $this->resourceConnection->getConnection();
+            $select = $connection->select(); //@codingStandardsIgnoreLine
+            $select->from($this->resourceConnection->getTableName('vipps_payment_jwt')) //@codingStandardsIgnoreLine
+                ->where('scope = ?', $this->getScopeType()) // @codingStandardsIgnoreLine
+                ->where('scope_id = ?', $this->getScopeId()) //@codingStandardsIgnoreLine
+                ->limit(1) //@codingStandardsIgnoreLine
+                ->order("token_id DESC"); //@codingStandardsIgnoreLine
+            $this->jwtRecord = $connection->fetchRow($select) ?: []; //@codingStandardsIgnoreLine
         }
-        return true;
+        return $this->jwtRecord;
     }
 
     /**
@@ -280,5 +246,45 @@ class TokenProvider implements TokenProviderInterface
             $this->logger->critical($e->getMessage());
             throw new CouldNotSaveException(__('Can\'t save jwt data to database.' . $e->getMessage()));
         }
+    }
+
+    /**
+     * Return current scope Id.
+     *
+     * @return int
+     */
+    private function getScopeId()
+    {
+        return $this->scopeResolver->getScope()->getId();
+    }
+
+    /**
+     * Return current scope type.
+     *
+     * @return string
+     */
+    private function getScopeType()
+    {
+        return $this->scopeResolver->getScope()->getScopeType();
+    }
+
+    /**
+     * Method to validate JWT token.
+     *
+     * @param $jwt
+     *
+     * @return bool
+     */
+    private function isJwtValid($jwt): bool
+    {
+        $requiredKeys = [
+            'token_type', 'expires_in', 'ext_expires_in', 'not_before', 'resource', 'access_token'
+        ];
+        foreach ($requiredKeys as $key) {
+            if (!array_key_exists($key, $jwt)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
