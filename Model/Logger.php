@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2022 Vipps
+ * Copyright 2026 Vipps
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
  * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
@@ -13,27 +13,33 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace Vipps\Checkout\Model\Logger\Handler;
 
-use Magento\Framework\Filesystem\DriverInterface;
-use Magento\Framework\Logger\Handler\Base;
+namespace Vipps\Checkout\Model;
+
+use DateTimeZone;
 use Magento\Payment\Gateway\ConfigInterface;
-use Monolog\Level;
-use Monolog\LogRecord;
+use Monolog\Handler\HandlerInterface;
 
-/**
- * Class Debug
- * @package Vipps\Checkout\Model\Logger\Handler
- */
-class Debug extends Base
+class Logger extends \Monolog\Logger
 {
     /**
-     * @var string
+     * @param string $name
+     * @param ConfigInterface $config
+     * @param list<HandlerInterface> $handlers
+     * @param callable[] $processors
+     * @param DateTimeZone|null $timezone
      */
-    protected $fileName = '/var/log/vipps_debug.log'; //@codingStandardsIgnoreLine
+    public function __construct(
+        string $name,
+        ConfigInterface $config,
+        array $handlers = [],
+        array $processors = [],
+        ?DateTimeZone $timezone = null
+    ) {
+        if (!$config->getValue('debug')) {
+            unset($handlers['debug']);
+        }
 
-    /**
-     * @var int
-     */
-    protected $loggerType = Level::Debug; //@codingStandardsIgnoreLine
+        parent::__construct($name, $handlers, $processors, $timezone);
+    }
 }
