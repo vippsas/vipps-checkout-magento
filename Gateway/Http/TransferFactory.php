@@ -15,7 +15,6 @@
  */
 namespace Vipps\Checkout\Gateway\Http;
 
-use Psr\Log\LoggerInterface;
 use Vipps\Checkout\Gateway\Http\Client\ClientInterface;
 use Vipps\Checkout\Model\UrlResolver;
 
@@ -54,7 +53,6 @@ class TransferFactory implements TransferFactoryInterface
      * @var array
      */
     private $allowedBodyKeys;
-    private LoggerInterface $logger;
 
     /**
      * TransferFactory constructor.
@@ -69,7 +67,6 @@ class TransferFactory implements TransferFactoryInterface
     public function __construct(
         TransferBuilder $transferBuilder,
         UrlResolver $urlResolver,
-        LoggerInterface $logger,
         string $method,
         string $endpointUrl,
         array $urlParams = [],
@@ -77,7 +74,6 @@ class TransferFactory implements TransferFactoryInterface
     ) {
         $this->transferBuilder = $transferBuilder;
         $this->urlResolver = $urlResolver;
-        $this->logger = $logger;
         $this->method = $method;
         $this->endpointUrl = $endpointUrl;
         $this->urlParams = $urlParams;
@@ -124,7 +120,6 @@ class TransferFactory implements TransferFactoryInterface
                 $endpointUrl = str_replace(':' . $paramValue, $request[$paramValue], $this->endpointUrl);
             }
         }
-
         return $this->urlResolver->getUrl($endpointUrl);
     }
 

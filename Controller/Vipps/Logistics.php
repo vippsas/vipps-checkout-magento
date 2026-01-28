@@ -133,9 +133,6 @@ class Logistics implements ActionInterface, CsrfAwareActionInterface
      */
     public function execute()
     {
-        $this->logger->debug(
-            "Incoming logistics request, with content", ['data' => $this->request->getContent()]
-        );
         $result = $this->resultFactory->create(ResultFactory::TYPE_JSON);
         try {
             $this->authorize();

@@ -15,15 +15,27 @@
  */
 namespace Vipps\Checkout\Controller\Vipps;
 
+use Magento\Framework\Registry;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\View\LayoutFactory;
+use Magento\Quote\Api\CartRepositoryInterface;
+use Magento\Framework\View\Result\PageFactory;
+use Magento\Framework\Translate\InlineInterface;
 use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\ResultFactory;
+use Magento\Framework\Data\Form\FormKey\Validator;
+use Magento\Framework\Controller\Result\RawFactory;
+use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Customer\Api\AccountManagementInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Framework\Serialize\Serializer\Json;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Vipps\Checkout\Model\QuoteRepository as VippsQuoteRepository;
 use Vipps\Checkout\Model\SessionManager;
+use Magento\Customer\Model\Session as CustomerSession;
 use Psr\Log\LoggerInterface;
+use Magento\Framework\View\Result\LayoutFactory as ResultLayoutFactory;
 use Magento\Framework\Exception\NoSuchEntityException;
 
 class Index extends \Magento\Checkout\Controller\Index\Index
@@ -53,20 +65,20 @@ class Index extends \Magento\Checkout\Controller\Index\Index
         CheckoutSession $checkoutSession,
         VippsQuoteRepository $vippsQuoteRepository,
         SessionManager $sessionManager,
-        \Magento\Framework\App\Action\Context $context,
-        \Magento\Customer\Model\Session $customerSession,
+        Context $context,
+        CustomerSession $customerSession,
         CustomerRepositoryInterface $customerRepository,
         AccountManagementInterface $accountManagement,
-        \Magento\Framework\Registry $coreRegistry,
-        \Magento\Framework\Translate\InlineInterface $translateInline,
-        \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Framework\View\LayoutFactory $layoutFactory,
-        \Magento\Quote\Api\CartRepositoryInterface $quoteRepository,
-        \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-        \Magento\Framework\View\Result\LayoutFactory $resultLayoutFactory,
-        \Magento\Framework\Controller\Result\RawFactory $resultRawFactory,
-        \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
+        Registry $coreRegistry,
+        InlineInterface $translateInline,
+        Validator $formKeyValidator,
+        ScopeConfigInterface $scopeConfig,
+        LayoutFactory $layoutFactory,
+        CartRepositoryInterface $quoteRepository,
+        PageFactory $resultPageFactory,
+        ResultLayoutFactory $resultLayoutFactory,
+        RawFactory $resultRawFactory,
+        JsonFactory $resultJsonFactory,
         LoggerInterface $logger
     ) {
         parent::__construct(
