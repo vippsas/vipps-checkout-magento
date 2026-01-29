@@ -49,7 +49,6 @@ define([
         },
         isVisible: ko.observable(true),
         currentTotals: {},
-        processCounter: 0,
 
         initialize: function () {
             this._super();
@@ -72,73 +71,86 @@ define([
                 language: "no",
                 on: {
                     "shipping_option_selected": function(data) {
-                        if (data.price !== undefined) {
-                            window.vippsShipping = {};
-                            window.vippsShipping.id = data.id;
-                            window.vippsShipping.price = data.price.fractionalDenomination;
-                        }
                         data['cartId'] = quote.getQuoteId();
-                        jQuery.ajax({
-                            url: url.build('checkout/vipps/UpdateShippingOption'),
-                            type: "POST",
-                            dataType: "json",
-                            data: data,
-                            beforeSend: () => this.startProcess(),
-                            complete:   () => this.stopProcess()
-                        }).done(() => {
-                            quote.shippingMethod({
-                                "carrier_title": data.brand,
-                                "method_title": data.product
+                        jQuery(document.body).trigger('processStart');
+                        var updateShipping = new Promise((resolve, reject) => {
+                            jQuery.ajax({
+                                url: url.build('checkout/vipps/UpdateShippingOption'),
+                                type: "POST",
+                                dataType: "json",
+                                data: data,
+                                success: resolve,
+                                error: reject
                             });
-                            getTotalsAction([], jQuery.Deferred());
                         });
+
+                        updateShipping
+                            .then(() => {
+                                quote.shippingMethod({
+                                    "carrier_title": data.brand,
+                                    "method_title": data.product
+                                });
+                                const deferred = jQuery.Deferred();
+                                getTotalsAction([], deferred);
+
+                                return deferred.promise();
+                            })
+                            .finally(() => jQuery(document.body).trigger('processStop'));
                     },
                     "total_amount_changed": function(data) {
-                        this.handleTotalAmountChanged(data);
+                        // Do something when the total amount changed
                     },
                     "session_status_changed": function(data) {
                         // Do something when status changed
                     },
                     "shipping_address_changed": function(data) {
                         data['cartId'] = quote.getQuoteId();
-                        jQuery.ajax({
-                            url: url.build('checkout/vipps/UpdateShippingAddress'),
-                            type: "POST",
-                            dataType: "json",
-                            data: data
-                        }).done((response) => {
-                            getTotalsAction([], jQuery.Deferred());
+                        jQuery(document.body).trigger('processStart');
+                        var changeAddress = new Promise((resolve, reject) => {
+                            jQuery.ajax({
+                                url: url.build('checkout/vipps/UpdateShippingAddress'),
+                                type: "POST",
+                                dataType: "json",
+                                data: data,
+                                success: resolve,
+                                error: reject
+                            });
                         });
+
+                        changeAddress
+                            .then(() => {
+                                const deferred = jQuery.Deferred();
+                                getTotalsAction([], deferred);
+
+                                return deferred.promise();
+                            })
+                            .finally(() => jQuery(document.body).trigger('processStop'));
                     },
                     "customer_information_changed": function(data) {
                         data['cartId'] = quote.getQuoteId();
-                        jQuery.ajax({
-                            url: url.build('checkout/vipps/UpdateCustomerInformation'),
-                            type: "POST",
-                            dataType: "json",
-                            data: data
-                        }).done((response) => {
-                            getTotalsAction([], jQuery.Deferred());
+                        jQuery(document.body).trigger('processStart');
+                        var changeAddress = new Promise((resolve, reject) => {
+                            jQuery.ajax({
+                                url: url.build('checkout/vipps/UpdateCustomerInformation'),
+                                type: "POST",
+                                dataType: "json",
+                                data: data,
+                                success: resolve,
+                                error: reject
+                            });
                         });
+
+                        changeAddress
+                            .then(() => {
+                                const deferred = jQuery.Deferred();
+                                getTotalsAction([], deferred);
+
+                                return deferred.promise();
+                            })
+                            .finally(() => jQuery(document.body).trigger('processStop'));
                     },
                 },
             });
-        },
-
-        startProcess() {
-            if (this.processCounter === 0) {
-                jQuery(document.body).trigger('processStart');
-            }
-            this.processCounter = this.processCounter + 1;
-        },
-
-        stopProcess() {
-            if (this.processCounter > 0) {
-                this.processCounter = this.processCounter - 1;
-                if (this.processCounter === 0) {
-                    jQuery(document.body).trigger('processStop');
-                }
-            }
         },
 
         /**
