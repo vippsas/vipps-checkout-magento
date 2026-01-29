@@ -423,12 +423,6 @@
             <argument name="logger" xsi:type="object">Vipps\Checkout\Model\Logger</argument>
         </arguments>
     </type>
-
-    <type name="Vipps\Checkout\Controller\Vipps\Logistics">
-        <arguments>
-            <argument name="logger" xsi:type="object">Vipps\Checkout\Model\Logger</argument>
-        </arguments>
-    </type>
     <type name="Vipps\Checkout\Observer\CheckoutSubmitAllAfter">
         <arguments>
             <argument name="logger" xsi:type="object">Vipps\Checkout\Model\Logger</argument>
