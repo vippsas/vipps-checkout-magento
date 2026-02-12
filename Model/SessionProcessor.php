@@ -16,6 +16,7 @@
 
 namespace Vipps\Checkout\Model;
 
+use Vipps\Checkout\Model\Method\Vipps;
 use Vipps\Checkout\Model\Quote\CancelFacade;
 use Vipps\Checkout\Gateway\Request\SubjectReader;
 use Vipps\Checkout\Api\Quote\CancelFacadeInterface;
@@ -387,10 +388,25 @@ class SessionProcessor
             );
         }
 
-        if ($vippsQuote->getReservedOrderId()
-            && $quote->getReservedOrderId() !== $vippsQuote->getReservedOrderId()
+        $save = false;
+
+        if (
+            $vippsQuote->getReservedOrderId() &&
+            $quote->getReservedOrderId() !== $vippsQuote->getReservedOrderId()
         ) {
             $quote->setReservedOrderId($vippsQuote->getReservedOrderId());
+            $save = true;
+        }
+
+        if (
+            $quote->getPayment() &&
+            $quote->getPayment()->getMethod() !== Vipps::METHOD_CODE
+        ) {
+            $quote->getPayment()->setMethod(Vipps::METHOD_CODE);
+            $save = true;
+        }
+
+        if ($save) {
             $this->cartRepository->save($quote);
         }
 
