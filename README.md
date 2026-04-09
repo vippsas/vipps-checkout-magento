@@ -14,9 +14,7 @@ END_METADATA -->
 ![Support and development by bluemint](./docs/images/bluemint.svg)
 
 *This plugin is built and maintained by [bluemint](https://www.bluemint.no/) and is hosted on [GitHub](https://github.com/vippsas/vipps-magento).
-For support, email us at [vipps@bluemint.dev](mailto:vipps@bluemint.dev)*
-
-![Vipps icon](./docs/images/vipps.png) *Only available for Vipps.*
+For support, email us at [vipps@bluemint.dev](mailto:vipps@bluemint.dev)*.
 
 <!-- START_COMMENT -->
 💥 Please use the plugin pages on [https://developer.vippsmobilepay.com](https://developer.vippsmobilepay.com/docs/plugins-ext/checkout-magento/). 💥
@@ -25,6 +23,18 @@ For support, email us at [vipps@bluemint.dev](mailto:vipps@bluemint.dev)*
 Vipps MobilePay is the leading provider of smart payments in the Nordic region. Our goal is to engage and excite people every day through world-class simplification. We are collectively owned by 110 banks in Norway and provide a broad range of payment and digital identification services. The Vipps mobile wallet has achieved worldwide attention, and is widely recognized for its success, having achieved nearly 80 percent market penetration in the Norwegian market.
 
 *Checkout Module for Adobe Commerce* allows customers to choose Vipps, VISA, or MasterCard as a payment method directly in the checkout.
+
+
+## Account and pricing
+
+:::warning Checkout – important update
+
+Vipps MobilePay has entered into an agreement to sell the Checkout solution to [Kustom](https://www.kustom.co/).
+
+As part of this transition, *Vipps MobilePay Checkout* will become *Kustom Checkout*. This means the Checkout product you ordered will be delivered and developed by Kustom going forward.
+If you have questions, you can check our [FAQ](https://vippsmobilepay.com/vippsmobilepay-kustom).
+
+:::
 
 ## Requirements/prerequisites
 
@@ -36,10 +46,6 @@ Vipps MobilePay is the leading provider of smart payments in the Nordic region. 
   * HTTP/1.1 must therefore be "forced", typically by using [CPanel](https://api.docs.cpanel.net/) or similar
 * A verified Vipps MobilePay Checkout merchant account
 
-## Account and pricing
-
-Use of the Vipps Checkout module requires an agreement with Vipps MobilePay. Additional fees apply.
-To sign up for an agreement, register on [https://portal.vippsmobilepay.com](https://portal.vippsmobilepay.com/register/vippscheckout).
 
 ## Feature highlights
 
