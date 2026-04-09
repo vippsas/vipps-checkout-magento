@@ -49,7 +49,10 @@ With this extension, your customers will be able to choose Vipps, VISA, or Maste
 
 Vipps MobilePay offers PCI DSS compliant payment services. No cardholder data or sensitive authentication data is stored in Adobe Commerce. All PCI DSS relevant information is sent directly to PCI DSS validated servers. This means that Vipps payments services will not increase the merchant's PCI DSS scope. Additionally, no personal information is stored in Adobe Commerce.
 
+## Documentation
+
+See more on how the extension can be customized here [Customization](./docs/customization.md).
+
 ## Support
 
-For problems with the plugin,
-[submit an issue](https://github.com/vippsas/vipps-checkout-magento/issues) on GitHub.
+For support, email us at [vipps@bluemint.dev](mailto:vipps@bluemint.dev)
