@@ -2,6 +2,7 @@
 ---
 title: Adobe Commerce / Magento Changelog
 sidebar_position: 100
+sidebar_label: Changelog
 description: All notable changes to the Adobe Commerce / Magento plugin will be documented in this file.
 pagination_next: null
 pagination_prev: null
