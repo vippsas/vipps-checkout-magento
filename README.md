@@ -24,7 +24,6 @@ Vipps MobilePay is the leading provider of smart payments in the Nordic region. 
 
 *Checkout Module for Adobe Commerce* allows customers to choose Vipps, VISA, or MasterCard as a payment method directly in the checkout.
 
-
 ## Account and pricing
 
 :::warning Checkout – important update
@@ -57,7 +56,7 @@ Vipps MobilePay offers PCI DSS compliant payment services. No cardholder data or
 
 ## Documentation
 
-See more on how the extension can be customized here [Customization](./docs/customization.md).
+See more on how the extension can be customized in the [Customization guide](./docs/customization.md).
 
 ## Support
 
