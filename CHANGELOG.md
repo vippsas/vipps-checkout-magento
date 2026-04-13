@@ -1,17 +1,35 @@
+<!-- START_METADATA
+---
+title: Adobe Commerce / Magento Changelog
+sidebar_position: 100
+sidebar_label: Changelog
+description: All notable changes to the Adobe Commerce / Magento plugin will be documented in this file.
+pagination_next: null
+pagination_prev: null
+section: Plugins
+---
+END_METADATA -->
+
 # Changelog
+
 All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog and this project adheres to Semantic Versioning.
 
 ## [1.1.0] - 2025-12-02
+
 ### Added
+
 - Add support for Magento 2.4.8
 
 ### Changed
+
 - Compatibility with Monolog v3
 
 ## [1.0.2] - 2025-12-02
+
 ### Added
+
 - Add PHP 8.4 compatibility
 - Customer address prefil for the same session
 - Better brand logo support in checkout shipping methods, add Bring/Posten logo support
@@ -19,9 +37,10 @@ The format is based on Keep a Changelog and this project adheres to Semantic Ver
 - Functionality to reuse current session and renew functionality for iframe
 - Create session if it doesn't exist for order cancel
 - New session generation via `vipps/checkout/session`
-- New Update totals logic (update vipps total when magento total is changed, recalculate shipping methods)
+- New Update totals logic (update Vipps total when Magento total is changed, recalculate shipping methods)
 
 ### Changed
+
 - Fix deprecated ZendClient usage in 'Test Credentials' button, replaced by Laminas
 - Remove auto address removal from quote on session init
 - Fix datetime in `event_log.phtml`
