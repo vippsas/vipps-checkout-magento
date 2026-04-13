@@ -86,10 +86,10 @@ define([
                         });
                     },
                     "total_amount_changed": function(data) {
-                     // Do something when the total amount changed
+                        // Do something when the total amount changed
                     },
                     "session_status_changed": function(data) {
-                     // Do something when status changed
+                        // Do something when status changed
                     },
                     "shipping_address_changed": function(data) {
                         data['cartId'] = quote.getQuoteId();

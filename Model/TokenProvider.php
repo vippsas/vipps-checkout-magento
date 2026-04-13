@@ -15,22 +15,20 @@
  */
 namespace Vipps\Checkout\Model;
 
+use Exception;
 use Psr\Log\LoggerInterface;
 use Magento\Payment\Gateway\ConfigInterface;
 use Magento\Framework\App\ScopeResolverInterface;
 use Magento\Framework\Exception\CouldNotSaveException;
-use Magento\Framework\HTTP\ZendClientFactory;
-use Magento\Framework\HTTP\ZendClient;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Serialize\Serializer\Json;
 use Vipps\Checkout\Api\TokenProviderInterface;
 use Vipps\Checkout\Gateway\Exception\AuthenticationException;
 use Vipps\Checkout\Gateway\Http\Client\ClientInterface;
+use Laminas\Http\ClientFactory;
+use Laminas\Http\Request;
+use Laminas\Http\Response;
 
-/**
- * Class TokenProvider
- * @package Vipps\Checkout\Model
- */
 class TokenProvider implements TokenProviderInterface
 {
     /**
@@ -46,7 +44,7 @@ class TokenProvider implements TokenProviderInterface
     private static $endpointUrl = '/accessToken/get';
 
     /**
-     * @var ZendClientFactory
+     * @var ClientFactory
      */
     private $httpClientFactory;
 
@@ -89,16 +87,16 @@ class TokenProvider implements TokenProviderInterface
      * TokenProvider constructor.
      *
      * @param ResourceConnection $resourceConnection
-     * @param ZendClientFactory $httpClientFactory
+     * @param ClientFactory $httpClientFactory
      * @param ConfigInterface $config
-     * @param Json $serializer,
+     * @param Json $serializer
      * @param LoggerInterface $logger
      * @param UrlResolver $urlResolver
      * @param ScopeResolverInterface $scopeResolver
      */
     public function __construct(
         ResourceConnection $resourceConnection,
-        ZendClientFactory $httpClientFactory,
+        ClientFactory $httpClientFactory,
         ConfigInterface $config,
         Json $serializer,
         LoggerInterface $logger,
@@ -166,28 +164,28 @@ class TokenProvider implements TokenProviderInterface
             ClientInterface::HEADER_PARAM_CLIENT_ID => $this->config->getValue('client_id'),
             ClientInterface::HEADER_PARAM_CLIENT_SECRET => $this->config->getValue('client_secret'),
             ClientInterface::HEADER_PARAM_SUBSCRIPTION_KEY => $this->config->getValue('subscription_key1'),
+            'Content-Length' => 0
         ];
-        /** @var ZendClient $client */
+
         $client = $this->httpClientFactory->create();
         try {
-            $client->setConfig(['strict' => false]);
+            $client->setOptions(['strict' => false]);
             $client->setUri($this->urlResolver->getUrl(self::$endpointUrl));
-            $client->setMethod(ZendClient::POST);
+            $client->setMethod(Request::METHOD_POST);
             $client->setHeaders($headers);
+            $client->setRawBody('');
 
-            /** Making request to Vipps
-             * @var $response \Zend_Http_Response
-             */
-            $response = $client->request();
+            $response = $client->send();
             $jwt = $this->serializer->unserialize($response->getBody());
-            if (!$response->isSuccessful()) {
-                throw new \Exception($response->getBody()); //@codingStandardsIgnoreLine
+
+            if (!$response->isSuccess()) {
+                throw new Exception($response->getBody()); //@codingStandardsIgnoreLine
             }
             if (!$this->isJwtValid($jwt)) {
-                throw new \Exception('Not valid JWT data returned from Vipps. Response: '. $response); //@codingStandardsIgnoreLine
+                throw new Exception('Not valid JWT data returned from Vipps. Response: '. $response); //@codingStandardsIgnoreLine
             }
             $this->logger->debug('Token fetched from Vipps');
-        } catch (\Exception $e) {    //@codingStandardsIgnoreLine
+        } catch (Exception $e) {    //@codingStandardsIgnoreLine
             $this->logger->critical($e->getMessage());
             throw new AuthenticationException(__('Can\'t retrieve access token from Vipps.'), $e);
         }
@@ -244,7 +242,7 @@ class TokenProvider implements TokenProviderInterface
                 );
             }
             $this->logger->debug(__('Refreshed Jwt data.'));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->critical($e->getMessage());
             throw new CouldNotSaveException(__('Can\'t save jwt data to database.' . $e->getMessage()));
         }

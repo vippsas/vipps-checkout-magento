@@ -56,14 +56,17 @@ class TransactionDataBuilder implements BuilderInterface
         /** @var \Magento\Quote\Model\Quote $quote */
         $quote = $payment->getQuote();
 
+        // We don't need to send shipping price to Vipps as it's added and calculated in iframe.
+        $shipping = isset($quote->getTotals()['shipping']) ? $quote->getTotals()['shipping']->getValue() : 0;
+
         return [
             'transaction' => [
                 'amount' => [
                     'currency' => $quote->getStoreCurrencyCode(),
-                    'value' => $quote->getGrandTotal() * 100
+                    'value' => ($quote->getGrandTotal() - $shipping) * 100
                 ],
                 'reference' => $quote->getReservedOrderId(),
-                'paymentDescription' => 'Order Id'
+                'paymentDescription' => 'Order ID: ' . $quote->getReservedOrderId()
             ]
         ];
     }

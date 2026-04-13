@@ -237,8 +237,28 @@ class Logistics implements ActionInterface, CsrfAwareActionInterface
         foreach ($shippingMethods as $key => $shippingMethod) {
             $methodFullCode = $shippingMethod->getCarrierCode() . '_' . $shippingMethod->getMethodCode();
 
+            $title = $shippingMethod->getCarrierTitle();
+            $description = (string) $shippingMethod->getMethodTitle();
+
+            $extensionAttributes = $shippingMethod->getExtensionAttributes();
+
+            $carrierCode = $shippingMethod->getCarrierCode();
+            // Check if Bring/Posten based on bring api logo url
+            $logo = null;
+            if (
+                method_exists($extensionAttributes, 'getLogoUrl') &&
+                $extensionAttributes->getLogoUrl() !== null
+            ) {
+                if (str_contains($extensionAttributes->getLogoUrl(), 'Bring')) {
+                    $logo = 'BRING';
+                }
+                if (str_contains($extensionAttributes->getLogoUrl(), 'Posten')) {
+                    $logo = 'POSTEN';
+                }
+            }
+
             $responseData[] = [
-                'brand' => $this->getBrand($shippingMethod->getCarrierCode()),
+                'brand' => $logo ?? $this->getBrand($carrierCode),
                 'type' => $this->getDeliveryType((string)$shippingMethod->getMethodCode()),
                 'amount' => [
                     'currency' => $quote->getStoreCurrencyCode(),
@@ -247,8 +267,8 @@ class Logistics implements ActionInterface, CsrfAwareActionInterface
                 'id' => $methodFullCode,
                 'priority' => $key,
                 'isDefault' => false,
-                'title' => $shippingMethod->getCarrierTitle(),
-                'description' => $shippingMethod->getCarrierTitle() . ' ' . $shippingMethod->getMethodTitle()
+                'title' => $title,
+                'description' => $description
             ];
         }
 
@@ -264,6 +284,12 @@ class Logistics implements ActionInterface, CsrfAwareActionInterface
      */
     public function getBrand(string $carrierCode): string
     {
+        $supportedBrands = MethodMappingInterface::CARRIER_CODE;
+        foreach ($supportedBrands as $code => $label) {
+            if (str_contains($carrierCode, $code)) {
+                return $label;
+            }
+        }
         if (array_key_exists($carrierCode, MethodMappingInterface::CARRIER_CODE)) {
             return MethodMappingInterface::CARRIER_CODE[$carrierCode];
         }

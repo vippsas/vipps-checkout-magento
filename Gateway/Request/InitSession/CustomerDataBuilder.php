@@ -19,6 +19,7 @@ use Magento\Customer\Model\Customer;
 use Magento\Framework\Session\SessionManagerInterface;
 use Magento\Payment\Gateway\Request\BuilderInterface;
 use Magento\Customer\Model\Session;
+use Magento\Quote\Api\CartRepositoryInterface;
 
 /**
  * Class CustomerDataBuilder
@@ -31,10 +32,17 @@ class CustomerDataBuilder implements BuilderInterface
      */
     private SessionManagerInterface $customerSession;
 
+    /**
+     * @var CartRepositoryInterface
+     */
+    private CartRepositoryInterface $quoteRepository;
+
     public function __construct(
-        SessionManagerInterface $customerSession
+        SessionManagerInterface $customerSession,
+        CartRepositoryInterface $quoteRepository
     ) {
         $this->customerSession = $customerSession;
+        $this->quoteRepository = $quoteRepository;
     }
 
     /**
@@ -49,19 +57,41 @@ class CustomerDataBuilder implements BuilderInterface
     {
         $data = [];
 
-        /** @var Customer $customer */
-        $customer = $this->customerSession->getCustomer();
-        if ($customer && $customer->getDefaultBillingAddress()) {
-            $data['prefillCustomer'] = [
-                'firstName' => $customer->getFirstname(),
-                'lastName' => $customer->getLastname(),
-                'email' => $customer->getEmail(),
-                'phoneNumber' => $customer->getDefaultBillingAddress()->getTelephone(),
-                'streetAddress' => $customer->getDefaultBillingAddress()->getStreetFull(),
-                'city' => $customer->getDefaultBillingAddress()->getCity(),
-                'postalCode' => $customer->getDefaultBillingAddress()->getPostcode(),
-                'country' => $customer->getDefaultBillingAddress()->getCountry()
-            ];
+        $orderData = $buildSubject['payment']->getOrder() ?? null;
+
+        // Prefill customer data from quote if available
+        if ($orderData && $orderData->getId()) {
+            $quote = $this->quoteRepository->get($orderData->getId());
+            if ($quote->getBillingAddress() && $quote->getBillingAddress()->getTelephone() !== null) {
+                $data['prefillCustomer'] = [
+                    'firstName' => $quote->getBillingAddress()->getFirstname(),
+                    'lastName' => $quote->getBillingAddress()->getLastname(),
+                    'email' => $quote->getBillingAddress()->getEmail(),
+                    'phoneNumber' => str_replace('+','', $quote->getBillingAddress()->getTelephone()), //Format must be MSISDN (including country code). Example: "4712345678", in quote it saves the +, so it should be removed.
+                    'streetAddress' => $quote->getBillingAddress()->getStreetFull(),
+                    'city' => $quote->getBillingAddress()->getCity(),
+                    'postalCode' => $quote->getBillingAddress()->getPostcode(),
+                    'country' => $quote->getBillingAddress()->getCountryId()
+                ];
+            }
+        }
+
+        // Fallback to previous logic, add customer data from customer instead of quote, also remove + from phone number
+        if (empty($data)) {
+            /** @var Customer $customer */
+            $customer = $this->customerSession->getCustomer();
+            if ($customer && $customer->getDefaultBillingAddress()) {
+                $data['prefillCustomer'] = [
+                    'firstName' => $customer->getFirstname(),
+                    'lastName' => $customer->getLastname(),
+                    'email' => $customer->getEmail(),
+                    'phoneNumber' => str_replace('+','', $customer->getDefaultBillingAddress()->getTelephone()),
+                    'streetAddress' => $customer->getDefaultBillingAddress()->getStreetFull(),
+                    'city' => $customer->getDefaultBillingAddress()->getCity(),
+                    'postalCode' => $customer->getDefaultBillingAddress()->getPostcode(),
+                    'country' => $customer->getDefaultBillingAddress()->getCountry()
+                ];
+            }
         }
 
         return $data;
