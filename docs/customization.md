@@ -12,7 +12,7 @@ END_METADATA -->
 
 # Extra functionalities and customizations for Vipps Checkout
 
-:::warning Checkout – important update
+:::warning[Checkout – important update]
 
 Vipps MobilePay has entered into an agreement to sell the Checkout solution to [Kustom](https://www.kustom.co/).
 
