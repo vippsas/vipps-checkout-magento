@@ -31,7 +31,7 @@ The format is based on Keep a Changelog and this project adheres to Semantic Ver
 ### Added
 
 - Add PHP 8.4 compatibility
-- Customer address prefil for the same session
+- Customer address prefill for the same session
 - Better brand logo support in checkout shipping methods, add Bring/Posten logo support
 - Cancel Vipps Order on total amount mismatch
 - Functionality to reuse current session and renew functionality for iframe
