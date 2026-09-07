@@ -48,7 +48,7 @@ If you have questions, you can check our [FAQ](https://vippsmobilepay.com/vippsm
 
 ## Feature highlights
 
-With this extension, your customers will be able to choose Vipps, VISA, or MasterCard as a payment method directly in the checkout. There is no need to go via a third party payment method. The customer is identified in the Checkout, and his/her address and contact details will be available to the webshop during the payment process. Shipping options will be displayed in the checkout for the customer to choose from.
+With this extension, your customers will be able to choose Vipps, VISA, or MasterCard as a payment method directly in the checkout. There is no need to go via a third-party payment method. The customer is identified in the Checkout, and his/her address and contact details will be available to the webshop during the payment process. Shipping options will be displayed in the checkout for the customer to choose from.
 
 ## Security features
 
